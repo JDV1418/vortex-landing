@@ -1,0 +1,2004 @@
+<!--
+  ============================================================================
+  VORTEX — Landing Page oficial
+  ----------------------------------------------------------------------------
+  Página autocontenida (HTML + CSS + JS vanilla). Sin CDN. Desplegable en
+  GitHub Pages tal cual.
+
+  DATOS A PERSONALIZAR (buscar estos marcadores):
+    [NÚMERO_WHATSAPP]  -> número WhatsApp en formato internacional sin '+',
+                          ej. 5076XXXXXXX  (aparece en enlaces wa.me)
+    hola@vortexadmin.com   -> correo de contacto (aparece en enlaces mailto)
+    [CIFRA_ILUSTRATIVA]-> todas las métricas están marcadas como ilustrativas;
+                          reemplazar con datos reales cuando existan.
+
+  ASSET OPCIONAL:
+    ./assets/edificio.webp -> render real de la torre del cliente (fondo
+    transparente). Si no existe, se muestra la silueta SVG de respaldo.
+    Ver instrucciones en el <div class="hero-building">.
+  ============================================================================
+-->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Vortex — administración de edificios y PHs impulsada por Agentes de IA. Personalizada a la medida de cada edificio, con bot de WhatsApp y dashboards en vivo. Para tu PH o para tu empresa administradora." />
+<meta name="theme-color" content="#0A1E2E" />
+<title>Vortex · Haz latir tu edificio en tiempo real</title>
+
+<style>
+  /* ==========================================================================
+     0. TOKENS DE DISEÑO — paleta "building intelligence"
+     ========================================================================== */
+  :root {
+    /* Fondos */
+    --navy-900: #0A1E2E;
+    --navy-800: #0D2438;
+    --navy-spot: #123049;   /* spotlight / glow central */
+    --surface:  #12293B;
+    --surface-2:#0F2233;
+    --border:   #1E3A4F;
+
+    /* Acento de marca */
+    --coral:    #F26B4E;
+    --coral-dim:#c8543b;
+
+    /* Datos / estados */
+    --data:     #5B9BD5;
+    --ok:       #3FB98A;
+    --warn:     #F0A64E;
+    --teal:     #14b8a6;
+
+    /* Texto */
+    --text:     #F2F6F9;
+    --muted:    #8FA6B5;
+
+    /* Tipografía */
+    --font-display: "Avenir Next", "Futura", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "SF Mono", "Menlo", "Roboto Mono", "Consolas", monospace; /* telemetría HUD */
+
+    /* Estructura */
+    --maxw: 1200px;
+    --radius: 18px;
+    --radius-sm: 12px;
+    --gap: clamp(1rem, 2vw, 1.75rem);
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+
+  /* ==========================================================================
+     1. RESET / BASE
+     ========================================================================== */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--text);
+    background: var(--navy-900);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; margin: 0; }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img, svg { max-width: 100%; display: block; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; border-radius: 4px; }
+
+  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(1.1rem, 4vw, 2.5rem); }
+  section { position: relative; }
+
+  /* Encabezados de sección */
+  main { counter-reset: hud; }
+  .kicker {
+    display: inline-flex; align-items: center; gap: .6rem;
+    font-family: var(--font-mono); font-size: .74rem; font-weight: 600;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--teal);
+    margin-bottom: 1rem; counter-increment: hud;
+  }
+  .kicker::before {
+    content: counter(hud, decimal-leading-zero);
+    opacity: .75; padding: 0 .1em .1em 0; border-bottom: 1px solid var(--teal);
+  }
+  .section-title { font-size: clamp(1.8rem, 4vw, 2.9rem); max-width: 20ch; }
+  .section-lead { color: var(--muted); font-size: clamp(1rem, 1.5vw, 1.15rem); max-width: 60ch; margin-top: 1rem; }
+  .section-head { margin-bottom: clamp(2rem, 5vw, 3.5rem); }
+
+  /* ==========================================================================
+     2. BOTONES
+     ========================================================================== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+    padding: .95rem 1.5rem; border-radius: 999px;
+    font-family: var(--font-display); font-weight: 600; font-size: .98rem;
+    border: 1px solid transparent; transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s; white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: var(--coral); color: #1a0d08;
+    box-shadow: 0 10px 30px -8px rgba(242,107,78,.6);
+  }
+  .btn-primary:hover { box-shadow: 0 16px 40px -8px rgba(242,107,78,.7); }
+  .btn-outline { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn-outline:hover { border-color: var(--teal); background: rgba(20,184,166,.08); }
+  .btn-ghost { padding: .6rem 1.1rem; background: rgba(242,107,78,.1); color: var(--coral); border: 1px solid rgba(242,107,78,.3); }
+  .btn-ghost:hover { background: rgba(242,107,78,.18); }
+  .btn svg { width: 18px; height: 18px; }
+
+  /* ==========================================================================
+     3. NAVBAR
+     ========================================================================== */
+  header.nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    background: rgba(10,30,46,.72);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s, background .3s;
+  }
+  header.nav.scrolled { border-bottom-color: var(--border); background: rgba(10,30,46,.9); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 70px; }
+  .logo { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; letter-spacing: -0.01em; }
+  .logo .vortex-mark { width: 30px; height: 30px; }
+  .nav-links { display: flex; align-items: center; gap: 1.9rem; }
+  .nav-links a { color: var(--muted); font-size: .95rem; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta { display: flex; align-items: center; gap: .8rem; }
+  .nav-toggle { display: none; background: none; border: 0; color: var(--text); padding: .4rem; }
+  @media (max-width: 900px) {
+    .nav-links { position: fixed; inset: 70px 0 auto 0; flex-direction: column; gap: 0;
+      background: var(--navy-800); border-bottom: 1px solid var(--border);
+      padding: 1rem clamp(1.1rem,4vw,2.5rem) 1.5rem; transform: translateY(-120%); transition: transform .35s var(--ease); }
+    .nav-links.open { transform: translateY(0); }
+    .nav-links a { width: 100%; padding: .85rem 0; border-bottom: 1px solid var(--border); }
+    .nav-toggle { display: inline-flex; }
+    .nav-cta .btn-outline { display: none; }
+  }
+
+  /* ==========================================================================
+     4. HERO
+     ========================================================================== */
+  .hero { position: relative; padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(3rem, 7vw, 5rem); overflow: hidden; }
+  /* Fondo con spotlight radial */
+  .hero::before {
+    content: ""; position: absolute; inset: -20% -10% auto 50%; transform: translateX(-50%);
+    width: 120vw; height: 90vh;
+    background: radial-gradient(60% 55% at 50% 35%, var(--navy-spot) 0%, var(--navy-800) 45%, var(--navy-900) 75%);
+    z-index: -2;
+  }
+  /* Grid sutil de fondo */
+  .hero::after {
+    content: ""; position: absolute; inset: 0; z-index: -1; opacity: .35;
+    background-image:
+      linear-gradient(rgba(30,58,79,.25) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,58,79,.25) 1px, transparent 1px);
+    background-size: 54px 54px;
+    -webkit-mask-image: radial-gradient(60% 60% at 50% 40%, #000 30%, transparent 80%);
+    mask-image: radial-gradient(60% 60% at 50% 40%, #000 30%, transparent 80%);
+  }
+
+  .hero-headline { text-align: center; max-width: 22ch; margin: 0 auto; font-size: clamp(2.2rem, 6vw, 4.1rem); }
+  .hero-headline .hl-coral { color: var(--coral); }
+  .hero-headline .hl-grad { background: linear-gradient(100deg, var(--data), var(--teal)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero-sub { text-align: center; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.3rem); max-width: 52ch; margin: 1.4rem auto 0; }
+  .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+
+  /* Toggle de actos */
+  .act-toggle { display: inline-flex; margin: 2.3rem auto 0; gap: .25rem; padding: .3rem;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; }
+  .act-toggle button {
+    border: 0; background: transparent; color: var(--muted); font-family: var(--font-display);
+    font-weight: 600; font-size: .9rem; padding: .55rem 1.2rem; border-radius: 999px; transition: color .25s, background .25s;
+  }
+  .act-toggle button[aria-pressed="true"] { background: var(--coral); color: #1a0d08; }
+  .toggle-row { display: flex; justify-content: center; }
+
+  /* Escenario del hero */
+  .hero-stage {
+    position: relative; margin: 2.4rem auto 0; max-width: 940px; aspect-ratio: 16 / 10;
+    min-height: 360px;
+  }
+  .stage-act { position: absolute; inset: 0; transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  .stage-act.is-hidden { opacity: 0; pointer-events: none; transform: scale(.96); }
+
+  /* --- ACTO 1: edificio --- */
+  .hero-building-wrap { position: relative; height: 100%; display: grid; place-items: center; }
+  /* Halo/constelación que respira */
+  .halo { position: absolute; width: 78%; max-width: 640px; aspect-ratio: 1; left: 50%; top: 52%; transform: translate(-50%,-50%); z-index: 0; }
+  .halo svg { width: 100%; height: 100%; overflow: visible; }
+  .halo .halo-ring { transform-origin: center; animation: breathe 6s var(--ease) infinite; }
+  @keyframes breathe { 0%,100% { transform: scale(1); opacity:.55 } 50% { transform: scale(1.06); opacity:.85 } }
+  .halo .node { animation: twinkle 4s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:.35} 50%{opacity:1} }
+  /* Anillo de heartbeat */
+  .heartbeat { position: absolute; left: 50%; top: 78%; width: 40px; height: 40px; transform: translate(-50%,-50%); border-radius: 50%; border: 2px solid var(--coral); z-index: 0; animation: pulseRing 4s ease-out infinite; }
+  @keyframes pulseRing { 0% { opacity:.8; transform: translate(-50%,-50%) scale(.4) } 70%{opacity:0} 100% { opacity:0; transform: translate(-50%,-50%) scale(6) } }
+
+  .hero-building { position: relative; z-index: 2; height: 82%; display: grid; place-items: center; will-change: transform; }
+  .hero-building img, .hero-building svg.building { height: 100%; width: auto; filter: drop-shadow(0 30px 50px rgba(0,0,0,.5)); }
+  /* Si tienes ./assets/edificio.webp descomenta la <img> en el HTML y oculta la silueta SVG */
+
+  /* Burbujas de reporte */
+  .bubble {
+    position: absolute; z-index: 4; display: inline-flex; align-items: center; gap: .5rem;
+    padding: .45rem .7rem .45rem .55rem; border-radius: 999px;
+    background: rgba(18,41,59,.92); border: 1px solid var(--coral);
+    font-size: .78rem; font-weight: 600; white-space: nowrap;
+    box-shadow: 0 8px 24px -6px rgba(0,0,0,.5); backdrop-filter: blur(4px);
+    opacity: 0; transform: translateY(8px) scale(.9);
+    transition: border-color .5s, background .5s, transform .3s var(--ease);
+  }
+  .bubble.show { animation: bubbleIn .5s var(--ease) forwards; }
+  @keyframes bubbleIn { to { opacity:1; transform: translateY(0) scale(1); } }
+  .bubble.resolved { border-color: var(--ok); }
+  .bubble.fade { opacity: 0 !important; transform: translateY(-10px) scale(.9); transition: opacity .8s, transform .8s; }
+  .bubble .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 4px rgba(242,107,78,.18); }
+  .bubble.resolved .dot { background: var(--ok); box-shadow: 0 0 0 4px rgba(63,185,138,.18); }
+  .bubble .ai-chip { font-size: .62rem; letter-spacing: .04em; color: var(--teal); background: rgba(20,184,166,.14); border: 1px solid rgba(20,184,166,.35); padding: .08rem .4rem; border-radius: 999px; }
+  .bubble:hover { transform: translateY(-3px) scale(1.04); }
+
+  /* --- ACTO 2: mapa de cartera --- */
+  .hero-map-wrap { position: relative; height: 100%; display: grid; place-items: center; }
+  .hero-map { position: relative; width: 100%; height: 100%; border: 1px solid var(--border); border-radius: var(--radius);
+    background: radial-gradient(80% 80% at 50% 40%, var(--navy-spot), var(--surface-2)); overflow: hidden; }
+  .hero-map canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+    cursor: grab; touch-action: pan-y; /* rotar en horizontal, scroll libre en vertical */
+  }
+  .hero-map canvas:active { cursor: grabbing; }
+  .map-pin { cursor: pointer; }
+  .map-pin circle.core { transition: r .25s var(--ease); }
+  .map-pin:hover circle.core { r: 9; }
+  .map-pin .halo-c { animation: pinPulse 3s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes pinPulse { 0%{opacity:.6; r:6} 70%{opacity:0; r:20} 100%{opacity:0; r:20} }
+  .map-legend { position: absolute; bottom: 14px; left: 14px; display: flex; gap: 1rem; font-size: .74rem; color: var(--muted);
+    background: rgba(10,30,46,.6); border: 1px solid var(--border); padding: .5rem .8rem; border-radius: 10px; backdrop-filter: blur(6px); }
+  .map-legend span { display: inline-flex; align-items: center; gap: .4rem; }
+  .map-legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  /* Signos vitales */
+  .vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: .9rem; max-width: 900px; margin: 2.5rem auto 0; }
+  .vital { display: flex; align-items: center; gap: .8rem; padding: .9rem 1rem; background: rgba(18,41,59,.6); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .vital .v-ic { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(91,155,213,.12); color: var(--data); }
+  .vital .v-ic.ok { background: rgba(63,185,138,.12); color: var(--ok); }
+  .vital .v-ic.coral { background: rgba(242,107,78,.12); color: var(--coral); }
+  .vital .v-ic.teal { background: rgba(20,184,166,.12); color: var(--teal); }
+  .vital .v-num { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1; }
+  .vital .v-lab { font-size: .74rem; color: var(--muted); }
+  @media (max-width: 720px) { .vitals { grid-template-columns: repeat(2,1fr); } }
+
+  /* ==========================================================================
+     5. GENERIC SECTION SPACING
+     ========================================================================== */
+  .band { padding: clamp(3.5rem, 8vw, 6.5rem) 0; }
+
+  /* Dos soluciones */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.2rem,2.5vw,2rem); }
+  @media (max-width: 860px) { .duo { grid-template-columns: 1fr; } }
+  .sol-card { position: relative; padding: clamp(1.5rem,3vw,2.3rem); border-radius: var(--radius); border: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--surface), var(--surface-2)); display: flex; flex-direction: column; overflow: hidden; }
+  .sol-card::before { content:""; position:absolute; inset:0 0 auto 0; height:3px; }
+  .sol-card.ph::before { background: linear-gradient(90deg, var(--coral), transparent); }
+  .sol-card.ent::before { background: linear-gradient(90deg, var(--data), var(--teal)); }
+  .sol-tag { align-self: flex-start; font-size: .74rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: .3rem .7rem; border-radius: 999px; margin-bottom: 1.1rem; }
+  .sol-card.ph .sol-tag { color: var(--coral); background: rgba(242,107,78,.12); }
+  .sol-card.ent .sol-tag { color: var(--data); background: rgba(91,155,213,.12); }
+  .sol-card h3 { font-size: clamp(1.35rem,2.5vw,1.7rem); }
+  .sol-card > p { color: var(--muted); margin-top: .7rem; }
+  .sol-mock { margin: 1.4rem 0; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--navy-900); overflow: hidden; }
+  .sol-feats { display: grid; gap: .6rem; margin: .4rem 0 1.6rem; }
+  .sol-feats li { display: flex; gap: .6rem; align-items: flex-start; color: var(--text); font-size: .95rem; }
+  .sol-feats li svg { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 2px; color: var(--ok); }
+  .sol-card .btn { align-self: flex-start; margin-top: auto; }
+
+  /* Grid de tarjetas genéricas */
+  .card-grid { display: grid; gap: var(--gap); }
+  .cols-4 { grid-template-columns: repeat(4,1fr); }
+  .cols-3 { grid-template-columns: repeat(3,1fr); }
+  @media (max-width: 900px) { .cols-4 { grid-template-columns: repeat(2,1fr); } .cols-3 { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) { .cols-4 { grid-template-columns: 1fr; } }
+  .feature {
+    padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface);
+    transition: transform .25s var(--ease), border-color .25s;
+  }
+  .feature:hover { transform: translateY(-4px); border-color: var(--teal); }
+  .feature .f-ic { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 1rem;
+    background: rgba(20,184,166,.1); color: var(--teal); }
+  .feature h3 { font-size: 1.12rem; }
+  .feature p { color: var(--muted); font-size: .92rem; margin-top: .5rem; }
+
+  /* Personalizado band */
+  .perso { background: linear-gradient(180deg, var(--surface-2), var(--navy-900)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .perso .feature .f-ic { background: rgba(242,107,78,.1); color: var(--coral); }
+
+  /* Cómo funciona — chat */
+  .how { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(1.5rem,4vw,3rem); align-items: center; }
+  @media (max-width: 860px) { .how { grid-template-columns: 1fr; } }
+  .steps { display: grid; gap: 1.1rem; }
+  .step { display: flex; gap: 1rem; align-items: flex-start; }
+  .step .s-no { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; color: var(--teal); background: rgba(20,184,166,.1); border: 1px solid rgba(20,184,166,.25); }
+  .step h3 { font-size: 1.08rem; }
+  .step p { color: var(--muted); font-size: .93rem; margin-top: .25rem; }
+
+  .chat { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-2); overflow: hidden; box-shadow: 0 30px 60px -20px rgba(0,0,0,.6); }
+  .chat-head { display: flex; align-items: center; gap: .7rem; padding: .8rem 1rem; background: #0b3a2f; border-bottom: 1px solid var(--border); }
+  .chat-head .ava { width: 34px; height: 34px; border-radius: 50%; background: var(--teal); display: grid; place-items: center; color: #04231e; font-weight: 700; font-family: var(--font-display); }
+  .chat-head .ct { font-size: .9rem; font-weight: 600; }
+  .chat-head .cs { font-size: .72rem; color: var(--ok); }
+  .chat-body { padding: 1rem; display: flex; flex-direction: column; gap: .7rem; min-height: 300px; background:
+    linear-gradient(rgba(10,30,46,.9), rgba(10,30,46,.9)); }
+  .msg { max-width: 82%; padding: .6rem .85rem; border-radius: 14px; font-size: .88rem; opacity: 0; transform: translateY(10px); }
+  .msg.in { animation: msgIn .4s var(--ease) forwards; }
+  @keyframes msgIn { to { opacity:1; transform: translateY(0); } }
+  .msg.me { align-self: flex-end; background: #0f6b4f; border-bottom-right-radius: 4px; }
+  .msg.bot { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .msg .who { display: block; font-size: .66rem; color: var(--teal); margin-bottom: .2rem; font-weight: 600; }
+  .msg.me .who { color: #9fe6cf; }
+  .msg .tag { display: inline-block; margin-top: .4rem; font-size: .68rem; color: var(--coral); background: rgba(242,107,78,.12); border: 1px solid rgba(242,107,78,.3); padding: .1rem .45rem; border-radius: 999px; }
+
+  /* Empresas / Mother Dashboard */
+  .ent-band { background: linear-gradient(180deg, var(--navy-900), var(--surface-2)); }
+  .ent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem,4vw,3rem); align-items: center; }
+  @media (max-width: 900px) { .ent-grid { grid-template-columns: 1fr; } }
+  .dash-mock { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-2); overflow: hidden; box-shadow: 0 30px 60px -20px rgba(0,0,0,.6); }
+  .dash-top { display: flex; align-items: center; justify-content: space-between; padding: .7rem 1rem; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .dash-top .dt-title { font-family: var(--font-display); font-weight: 700; font-size: .9rem; }
+  .dash-dots { display: flex; gap: .35rem; }
+  .dash-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--border); }
+  .dash-kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); }
+  .dash-kpi { background: var(--surface-2); padding: .9rem; text-align: center; }
+  .dash-kpi .k-n { font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; }
+  .dash-kpi .k-l { font-size: .68rem; color: var(--muted); }
+  .dash-map { position: relative; height: 200px; background: radial-gradient(70% 70% at 40% 40%, var(--navy-spot), var(--navy-900)); border-top: 1px solid var(--border); }
+  .dash-map svg { width: 100%; height: 100%; }
+  .ent-feats { display: grid; gap: 1rem; }
+  .ent-feat { display: flex; gap: .9rem; }
+  .ent-feat .ef-ic { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(91,155,213,.1); color: var(--data); }
+  .ent-feat h3 { font-size: 1.05rem; }
+  .ent-feat p { color: var(--muted); font-size: .9rem; margin-top: .2rem; }
+
+  /* Desempeño / KPIs */
+  .perf-band { background: linear-gradient(180deg, var(--surface-2), var(--navy-900)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .perf-sub { display: flex; align-items: center; gap: .6rem; font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; margin-bottom: 1.2rem; }
+  .perf-sub .ps-ic { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: rgba(91,155,213,.12); color: var(--data); }
+  .perf-sub.admins .ps-ic { background: rgba(242,107,78,.12); color: var(--coral); }
+  .perf-block + .perf-block { margin-top: clamp(2.5rem, 5vw, 4rem); }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: var(--gap); }
+  @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
+  .kpi-tile { padding: 1.3rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); transition: border-color .25s, transform .25s var(--ease); }
+  .kpi-tile:hover { border-color: var(--data); transform: translateY(-3px); }
+  .kpi-tile .k-label { color: var(--muted); font-size: .82rem; font-weight: 600; }
+  .kpi-tile .k-value { font-family: var(--font-display); font-weight: 700; font-size: 2.1rem; line-height: 1; margin: .5rem 0 .4rem; }
+  .kpi-tile .k-value small { font-size: .95rem; color: var(--muted); font-weight: 600; }
+  .k-delta { font-size: .8rem; font-weight: 700; display: inline-flex; gap: .25rem; align-items: center; }
+  .k-delta.good { color: var(--ok); } .k-delta.bad { color: var(--coral); }
+  .k-delta span { color: var(--muted); font-weight: 500; }
+  .k-spark { margin-top: .9rem; height: 34px; width: 100%; }
+
+  /* Tablero de administradores (scorecard) */
+  .score-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-2); }
+  .score-card { min-width: 720px; }
+  .score-head, .score-row { display: grid; grid-template-columns: 1.9fr 1.1fr .9fr .8fr 1fr 1.3fr; gap: 1rem; align-items: center; padding: 1rem 1.3rem; }
+  .score-card { min-width: 760px; }
+  .score-head { background: var(--surface); font-size: .7rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; }
+  .score-row { border-top: 1px solid var(--border); font-size: .92rem; }
+  .score-row:hover { background: rgba(30,58,79,.28); }
+  .score-row .admin { display: flex; gap: .75rem; align-items: center; }
+  .rank-no { flex: 0 0 auto; width: 22px; font-family: var(--font-display); font-weight: 700; color: var(--muted); text-align: center; }
+  .avatar-sm { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-family: var(--font-display); color: #04231e; background: var(--teal); font-size: .9rem; }
+  .admin .a-name { font-weight: 600; }
+  .admin .a-ph { font-size: .76rem; color: var(--muted); }
+  .cell-metric { font-family: var(--font-display); font-weight: 700; }
+  .metric-bar { height: 5px; border-radius: 999px; background: var(--border); overflow: hidden; margin-top: .35rem; }
+  .metric-bar > i { display: block; height: 100%; border-radius: 999px; }
+  .score-badge { justify-self: start; white-space: nowrap; font-weight: 700; font-family: var(--font-display); padding: .35rem .7rem; border-radius: 999px; font-size: .88rem; }
+  .score-badge.exc { color: var(--ok); background: rgba(63,185,138,.14); border: 1px solid rgba(63,185,138,.35); }
+  .score-badge.good2 { color: var(--data); background: rgba(91,155,213,.14); border: 1px solid rgba(91,155,213,.35); }
+  .score-badge.warn2 { color: var(--warn); background: rgba(240,166,78,.14); border: 1px solid rgba(240,166,78,.35); }
+  .score-badge.low { color: var(--coral); background: rgba(242,107,78,.14); border: 1px solid rgba(242,107,78,.35); }
+  .perf-note { display: flex; gap: .6rem; align-items: flex-start; margin-top: 1.4rem; padding: 1rem 1.2rem; border-radius: var(--radius-sm); background: rgba(20,184,166,.06); border: 1px solid rgba(20,184,166,.25); color: var(--muted); font-size: .88rem; }
+  .perf-note svg { flex: 0 0 auto; color: var(--teal); margin-top: 2px; }
+
+  /* Chips de capacidades de Agentes IA (en "Cómo funciona") */
+  .agent-chips { display: flex; flex-wrap: wrap; gap: .6rem; margin: -1.4rem 0 2.2rem; }
+  .a-chip {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-family: var(--font-mono); font-size: .72rem; letter-spacing: .05em; color: var(--text);
+    padding: .45rem .85rem; border: 1px solid rgba(20,184,166,.3); border-radius: 999px;
+    background: rgba(20,184,166,.06);
+  }
+  .a-chip::before { content: "◈"; color: var(--teal); font-size: .8rem; }
+
+  /* Roadmap comprimido (chips en el CTA final) */
+  .road-chips { display: flex; justify-content: center; flex-wrap: wrap; gap: .6rem; margin-top: 1.6rem; }
+  .r-chip {
+    font-family: var(--font-mono); font-size: .68rem; letter-spacing: .05em; color: var(--muted);
+    padding: .45rem .85rem; border: 1px solid var(--border); border-radius: 999px;
+  }
+  .r-chip b { color: var(--teal); margin-right: .45rem; font-weight: 600; }
+
+  /* Confianza / legal — banda compacta */
+  .trust-slim { background: var(--surface-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 1.7rem 0; }
+  .ts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.4rem; }
+  @media (max-width: 860px) { .ts-grid { grid-template-columns: 1fr; } }
+  .ts-item { display: flex; gap: .8rem; align-items: flex-start; }
+  .ts-item svg { flex: 0 0 auto; color: var(--ok); margin-top: 2px; }
+  .ts-item b { display: block; font-family: var(--font-display); font-size: .95rem; }
+  .ts-item span { color: var(--muted); font-size: .82rem; }
+
+  /* CTA final */
+  .final-cta { text-align: center; padding: clamp(3.5rem,8vw,6rem) 0; position: relative; overflow: hidden; }
+  .final-cta::before { content:""; position:absolute; inset:0; z-index:-1;
+    background: radial-gradient(50% 60% at 50% 40%, rgba(242,107,78,.16), transparent 70%); }
+  .final-cta h2 { font-size: clamp(2rem,5vw,3.4rem); max-width: 18ch; margin: 0 auto; }
+  .final-cta p { color: var(--muted); margin: 1.2rem auto 0; max-width: 46ch; }
+
+  /* Formulario */
+  .form-band { background: var(--surface-2); border-top: 1px solid var(--border); }
+  .form-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(1.5rem,4vw,3rem); align-items: start; }
+  @media (max-width: 860px) { .form-grid { grid-template-columns: 1fr; } }
+  form.contact { display: grid; gap: 1rem; }
+  .field { display: grid; gap: .4rem; }
+  .field.row { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 520px) { .field.row { grid-template-columns: 1fr; } }
+  label { font-size: .82rem; color: var(--muted); font-weight: 600; }
+  input, textarea, select {
+    width: 100%; padding: .8rem .9rem; border-radius: 10px; background: var(--navy-900);
+    border: 1px solid var(--border); color: var(--text); font: inherit; transition: border-color .2s;
+  }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--teal); }
+  textarea { min-height: 110px; resize: vertical; }
+  .form-info h2 { font-size: clamp(1.6rem,3vw,2.3rem); }
+  .form-info p { color: var(--muted); margin-top: 1rem; }
+  .contact-list { margin-top: 1.6rem; display: grid; gap: .8rem; }
+  .contact-list a { display: inline-flex; align-items: center; gap: .6rem; color: var(--text); font-weight: 500; }
+  .contact-list a svg { width: 20px; height: 20px; color: var(--teal); }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--border); padding: clamp(2.5rem,5vw,3.5rem) 0 2rem; }
+  .foot-grid { display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+  .foot-brand { max-width: 300px; }
+  .foot-brand p { color: var(--muted); font-size: .9rem; margin-top: .8rem; }
+  .foot-cols { display: flex; gap: clamp(2rem,6vw,5rem); flex-wrap: wrap; }
+  .foot-col h4 { font-family: var(--font-display); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 .9rem; }
+  .foot-col a { display: block; color: var(--text); font-size: .92rem; padding: .25rem 0; opacity: .85; }
+  .foot-col a:hover { opacity: 1; color: var(--teal); }
+  .foot-bottom { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; color: var(--muted); font-size: .82rem; }
+  .disclaimer { color: var(--muted); font-size: .78rem; max-width: 70ch; margin-top: .6rem; opacity: .8; }
+
+  /* ==========================================================================
+     HUD "COMMAND CENTER" — sistema visual (brackets, anillos, telemetría)
+     ========================================================================== */
+  /* Tipografía de telemetría en etiquetas de datos */
+  .v-lab, .s-lab, .k-label, .map-legend, .illus-note, .sol-tag, .r-badge,
+  .ai-chip, .msg .who, .score-head, .k-delta, .cs, .a-ph {
+    font-family: var(--font-mono); letter-spacing: .05em;
+  }
+
+  /* Corner brackets (se inyectan por JS en los paneles clave) */
+  .has-hud { position: relative; }
+  .hud-corner {
+    position: absolute; width: 14px; height: 14px; pointer-events: none; z-index: 3;
+    border: 1px solid rgba(20,184,166,.45); transition: border-color .3s;
+  }
+  .hud-corner.tl { top: 7px; left: 7px; border-right: 0; border-bottom: 0; }
+  .hud-corner.br { bottom: 7px; right: 7px; border-left: 0; border-top: 0; }
+  .has-hud:hover .hud-corner { border-color: rgba(20,184,166,.95); }
+
+  /* Glow de energía al hover en tiles */
+  .kpi-tile:hover, .feature:hover {
+    box-shadow: 0 0 0 1px rgba(20,184,166,.22), 0 16px 38px -16px rgba(20,184,166,.3);
+  }
+
+  /* Línea de energía bajo el navbar */
+  header.nav::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--teal), transparent);
+    background-size: 200% 100%; opacity: 0; transition: opacity .4s; pointer-events: none;
+    animation: navSweep 7s linear infinite;
+  }
+  header.nav.scrolled::after { opacity: .45; }
+  @keyframes navSweep { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
+
+  /* Escenario del hero: contiene el scanline */
+  .hero-stage { overflow: hidden; border-radius: var(--radius); }
+  .scanline {
+    position: absolute; left: 0; right: 0; top: -90px; height: 90px; z-index: 6; pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(20,184,166,.05) 40%, rgba(20,184,166,.13) 50%, rgba(20,184,166,.05) 60%, transparent);
+    animation: scanMove 11s linear infinite;
+  }
+  @keyframes scanMove { to { top: 100% } }
+
+  /* Anillos HUD giratorios tras el edificio */
+  .hud-rings { position: absolute; inset: 0; display: grid; place-items: center; z-index: 1; pointer-events: none; }
+  .hud-rings svg { height: 112%; aspect-ratio: 1; overflow: visible; }
+  .hud-rings g { transform-box: fill-box; transform-origin: center; }
+  .ring-cw  { animation: spinCW 70s linear infinite; }
+  .ring-ccw { animation: spinCCW 45s linear infinite; }
+  @keyframes spinCW  { to { transform: rotate(360deg) } }
+  @keyframes spinCCW { to { transform: rotate(-360deg) } }
+
+  /* Haz de escaneo que recorre el edificio */
+  .scan-beam {
+    position: absolute; left: 50%; top: 10%; transform: translateX(-50%);
+    width: min(240px, 55%); height: 6px; z-index: 3; pointer-events: none; border-radius: 999px;
+    background: linear-gradient(90deg, transparent, rgba(20,184,166,.55), transparent);
+    filter: blur(.5px); animation: beam 6.5s ease-in-out infinite;
+  }
+  @keyframes beam {
+    0% { top: 10%; opacity: 0 } 8% { opacity: .9 }
+    48% { top: 78%; opacity: .9 } 56% { top: 86%; opacity: 0 }
+    100% { top: 86%; opacity: 0 }
+  }
+
+  /* Secuencia de arranque del hero (solo sin reduced-motion; JS añade .boot) */
+  @keyframes bootIn {
+    0% { opacity: 0; transform: translateY(14px) scale(.985); filter: blur(5px) }
+    60% { opacity: 1 }
+    100% { opacity: 1; transform: none; filter: none }
+  }
+  .hero.boot .hero-headline { animation: bootIn .7s var(--ease) .05s backwards; }
+  .hero.boot .hero-sub      { animation: bootIn .7s var(--ease) .2s backwards; }
+  .hero.boot .hero-ctas     { animation: bootIn .7s var(--ease) .34s backwards; }
+  .hero.boot .toggle-row    { animation: bootIn .7s var(--ease) .46s backwards; }
+  .hero.boot .hero-stage    { animation: bootIn .9s var(--ease) .55s backwards; }
+  .hero.boot .vitals        { animation: bootIn .8s var(--ease) .72s backwards; }
+
+  /* Readout HUD del globo (ciudad enfocada) */
+  .globe-readout {
+    position: absolute; top: 14px; left: 14px; z-index: 4; min-width: 205px;
+    padding: .7rem .9rem; border: 1px solid var(--border); border-radius: 10px;
+    background: rgba(10,30,46,.74); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    font-family: var(--font-mono); pointer-events: none;
+    opacity: 0; transform: translateY(-6px);
+    transition: opacity .45s var(--ease), transform .45s var(--ease);
+  }
+  .globe-readout.on { opacity: 1; transform: none; }
+  .gr-top { font-size: .58rem; letter-spacing: .16em; color: var(--teal); opacity: .85; margin-bottom: .3rem; }
+  .gr-city { font-size: .84rem; font-weight: 700; letter-spacing: .06em; color: var(--text); margin-bottom: .4rem; }
+  .gr-city::before { content: "◎ "; color: var(--coral); }
+  .gr-row { display: flex; justify-content: space-between; gap: 1.2rem; font-size: .66rem; color: var(--muted); padding: .12rem 0; }
+  .gr-row b { color: var(--data); font-weight: 600; }
+  @media (max-width: 560px) { .globe-readout { min-width: 160px; padding: .55rem .7rem; } }
+
+  /* ==========================================================================
+     MODO DASHBOARD — la landing como consola de comando
+     Las secciones REALES se mueven a los paneles (cero duplicación de copy).
+     ========================================================================== */
+  .dash-toggle {
+    position: fixed; right: 18px; bottom: 18px; z-index: 200;
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em;
+    padding: .7rem 1.05rem; border-radius: 999px; cursor: pointer;
+    color: var(--teal); background: rgba(10,30,46,.85);
+    border: 1px solid rgba(20,184,166,.4);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    transition: border-color .25s, box-shadow .25s, transform .25s;
+  }
+  .dash-toggle:hover { border-color: var(--teal); box-shadow: 0 0 18px -4px rgba(20,184,166,.55); transform: translateY(-2px); }
+  body.dash-on { overflow: hidden; }
+
+  .dm-root {
+    position: fixed; inset: 0; z-index: 150; display: none;
+    grid-template-rows: 56px 1fr; grid-template-columns: 218px 1fr;
+    grid-template-areas: "top top" "side main";
+    background:
+      radial-gradient(60% 50% at 50% 0%, var(--navy-spot), transparent 70%),
+      linear-gradient(180deg, var(--navy-800), var(--navy-900));
+  }
+  body.dash-on .dm-root { display: grid; animation: dashIn .45s var(--ease); }
+  @keyframes dashIn { from { opacity: 0; transform: scale(1.015); filter: blur(6px) } to { opacity: 1 } }
+
+  .dm-top {
+    grid-area: top; display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 0 1.1rem; border-bottom: 1px solid var(--border); background: rgba(18,41,59,.5);
+  }
+  .dm-brand { display: flex; align-items: center; gap: .55rem; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+  .dm-brand small { font-family: var(--font-mono); font-weight: 400; font-size: .6rem; letter-spacing: .18em; color: var(--muted); }
+  .dm-status { display: flex; align-items: center; gap: .5rem; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .14em; color: var(--teal); }
+  .dm-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); animation: twinkle 2.5s ease-in-out infinite; }
+  .dm-exit { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .08em; }
+
+  .dm-side {
+    grid-area: side; display: flex; flex-direction: column; gap: .35rem;
+    padding: 1rem .8rem; border-right: 1px solid var(--border); background: rgba(15,34,51,.45);
+  }
+  .dm-tab {
+    display: flex; align-items: center; gap: .7rem; width: 100%; text-align: left;
+    padding: .72rem .85rem; border-radius: 10px; border: 1px solid transparent;
+    background: none; color: var(--muted); cursor: pointer;
+    font-family: var(--font-mono); font-size: .72rem; letter-spacing: .09em;
+    transition: color .2s, background .2s, border-color .2s;
+  }
+  .dm-tab i { font-style: normal; opacity: .55; font-size: .6rem; }
+  .dm-tab:hover { color: var(--text); background: rgba(30,58,79,.35); }
+  .dm-tab[aria-selected="true"] { color: var(--teal); border-color: rgba(20,184,166,.35); background: rgba(20,184,166,.07); }
+
+  .dm-main { grid-area: main; overflow-y: auto; overflow-x: hidden; padding: 1.2rem clamp(1rem,3vw,2.4rem) 3rem; }
+  .dm-panel { display: none; }
+  .dm-panel.on { display: block; animation: bootIn .5s var(--ease); }
+
+  /* Las secciones movidas se compactan dentro de la consola */
+  .dm-panel section { padding: 1.2rem 0 !important; background: none !important; border: 0 !important; }
+  .dm-panel .wrap { padding: 0; }
+  .dm-panel .reveal { opacity: 1 !important; transform: none !important; }
+  .dm-panel .hero::before, .dm-panel .hero::after { display: none; }
+  .dm-panel .hero-headline { font-size: clamp(1.7rem, 3.4vw, 2.6rem); }
+  .dm-panel .hero-sub { font-size: 1rem; }
+  .dm-panel .section-title { font-size: clamp(1.4rem, 2.6vw, 2rem); }
+  .dm-panel .section-head { margin-bottom: 1.6rem; }
+  .dm-panel .trust-slim { padding: 1rem 0 !important; }
+
+  @media (max-width: 860px) {
+    .dm-root { grid-template-rows: 52px 48px 1fr; grid-template-columns: 1fr; grid-template-areas: "top" "side" "main"; }
+    .dm-side { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--border); padding: .45rem .6rem; }
+    .dm-tab { white-space: nowrap; padding: .5rem .7rem; }
+    .dm-status { display: none; }
+    .dash-toggle { right: 12px; bottom: 12px; font-size: .66rem; padding: .6rem .85rem; }
+  }
+
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* Nota "ilustrativa" */
+  .illus-note { font-size: .72rem; color: var(--muted); opacity: .7; margin-top: .8rem; text-align: center; }
+</style>
+
+<!-- ==========================================================================
+     NAVBAR
+     ========================================================================== -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="logo" href="#top" aria-label="Vortex — inicio">
+      <!-- Logotipo SVG tipo vórtice / chevron -->
+      <svg class="vortex-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <defs><linearGradient id="vg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#F26B4E"/><stop offset="1" stop-color="#14b8a6"/>
+        </linearGradient></defs>
+        <path d="M20 3 C10 3 3 10 3 20 C3 27 8 33 15 35 L20 20 L28 32 C34 28 37 24 37 20 C37 10 30 3 20 3 Z"
+          stroke="url(#vg)" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+        <path d="M20 11 C15 11 11 15 11 20 C11 23 13 26 16 27 L20 20 Z" fill="url(#vg)" opacity=".9"/>
+      </svg>
+      <span>Vortex</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#soluciones">Soluciones</a>
+      <a href="#como">Cómo funciona</a>
+      <a href="#empresas">Empresas</a>
+      <a href="#desempeno">Desempeño</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <div class="nav-cta">
+      <!-- SECUNDARIO: dashboard en vivo (URL real) -->
+      <a class="btn btn-outline" href="https://jdv1418.github.io/vortex-mother-dashboard/" target="_blank" rel="noopener">Ver dashboard</a>
+      <!-- TERCIARIO: Solicitar demo -> ancla al formulario -->
+      <a class="btn btn-ghost" href="#contacto">Solicitar demo</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ======================================================================
+       HERO
+       ====================================================================== -->
+  <section class="hero" id="hero">
+    <div class="wrap">
+      <h1 class="hero-headline">
+        Ve tu edificio <span class="hl-coral">—o toda tu cartera—</span> <span class="hl-grad">latir</span> en tiempo real.
+      </h1>
+      <p class="hero-sub">
+        Administración impulsada por Agentes de IA, hecha a la medida de cada PH.
+        No una app genérica: tu edificio, tus reglas, tus flujos — vivos y transparentes 24/7.
+      </p>
+      <div class="hero-ctas">
+        <!-- PRIMARIO: WhatsApp. Reemplazar [NÚMERO_WHATSAPP] (formato 5076XXXXXXX) -->
+        <a class="btn btn-primary" href="https://wa.me/50761640089" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2.1.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.5c-.2.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.6-.1l1.9.9c.3.1.5.2.5.4.1.2.1.9-.1 1.5Z"/></svg>
+          Hablar por WhatsApp
+        </a>
+        <!-- SECUNDARIO: dashboard en vivo (URL real) -->
+        <a class="btn btn-outline" href="https://jdv1418.github.io/vortex-mother-dashboard/" target="_blank" rel="noopener">
+          Ver el dashboard en vivo
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a>
+      </div>
+
+      <!-- Toggle de actos: Un PH / Varios PHs -->
+      <div class="toggle-row">
+        <div class="act-toggle" role="group" aria-label="Cambiar vista del hero">
+          <button id="actBtn1" aria-pressed="true">Un PH</button>
+          <button id="actBtn2" aria-pressed="false">Varios PHs</button>
+        </div>
+      </div>
+
+      <!-- Escenario -->
+      <div class="hero-stage" id="heroStage" aria-hidden="true">
+        <!-- Barrido de escaneo global del HUD -->
+        <div class="scanline" aria-hidden="true"></div>
+
+        <!-- ACTO 1: edificio individual -->
+        <div class="stage-act" id="act1">
+          <div class="hero-building-wrap">
+            <!-- Halo / constelación que respira -->
+            <div class="halo">
+              <svg viewBox="0 0 400 400">
+                <g class="halo-ring">
+                  <circle cx="200" cy="200" r="150" fill="none" stroke="#14b8a6" stroke-width="1" opacity=".4"/>
+                  <circle cx="200" cy="200" r="110" fill="none" stroke="#5B9BD5" stroke-width="1" opacity=".3" stroke-dasharray="3 6"/>
+                </g>
+                <g stroke="#1E3A4F" stroke-width="1" opacity=".5">
+                  <line x1="200" y1="200" x2="70" y2="120"/><line x1="200" y1="200" x2="330" y2="140"/>
+                  <line x1="200" y1="200" x2="90" y2="300"/><line x1="200" y1="200" x2="320" y2="290"/>
+                  <line x1="70" y1="120" x2="90" y2="300"/><line x1="330" y1="140" x2="320" y2="290"/>
+                </g>
+                <g fill="#14b8a6">
+                  <circle class="node" cx="70" cy="120" r="3"/><circle class="node" cx="330" cy="140" r="3" style="animation-delay:.8s"/>
+                  <circle class="node" cx="90" cy="300" r="3" style="animation-delay:1.4s"/><circle class="node" cx="320" cy="290" r="3" style="animation-delay:2s"/>
+                  <circle class="node" cx="200" cy="55" r="2.5" style="animation-delay:1s"/>
+                </g>
+              </svg>
+            </div>
+            <div class="heartbeat"></div>
+
+            <!-- Anillos HUD giratorios (instrumentación del holograma) -->
+            <div class="hud-rings" aria-hidden="true">
+              <svg viewBox="0 0 500 500" fill="none">
+                <g class="ring-cw" stroke="#14b8a6" opacity=".35">
+                  <circle cx="250" cy="250" r="228" stroke-width="1" stroke-dasharray="3 9"/>
+                  <path d="M250 14v16M250 470v16M14 250h16M470 250h16" stroke-width="2"/>
+                </g>
+                <g class="ring-ccw" stroke="#5B9BD5" opacity=".3">
+                  <circle cx="250" cy="250" r="188" stroke-width="1.2" stroke-dasharray="70 12 6 12"/>
+                </g>
+                <g class="ring-cw" stroke="#F26B4E" opacity=".16" style="animation-duration:110s">
+                  <circle cx="250" cy="250" r="246" stroke-width="1" stroke-dasharray="1 7"/>
+                </g>
+              </svg>
+            </div>
+            <!-- Haz de escaneo que recorre los pisos -->
+            <div class="scan-beam" aria-hidden="true"></div>
+
+            <!-- EDIFICIO. Para usar un render real:
+                 1) coloca ./assets/edificio.webp (fondo transparente)
+                 2) descomenta la <img> y borra/oculta el <svg class="building"> -->
+            <div class="hero-building" id="heroBuilding">
+              <!-- <img src="./assets/edificio.webp" alt="Torre residencial" /> -->
+              <!-- Silueta SVG de respaldo (REEMPLAZAR por render del cliente) -->
+              <svg class="building" viewBox="0 0 200 340" fill="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="bfill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#1b3a52"/><stop offset="1" stop-color="#0f2436"/>
+                  </linearGradient>
+                  <linearGradient id="bedge" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#24506d"/><stop offset="1" stop-color="#14344c"/>
+                  </linearGradient>
+                </defs>
+                <!-- cuerpo -->
+                <rect x="55" y="30" width="90" height="290" rx="4" fill="url(#bfill)" stroke="#2b556f" stroke-width="1.5"/>
+                <rect x="40" y="70" width="20" height="250" rx="3" fill="url(#bedge)" stroke="#2b556f" stroke-width="1.2"/>
+                <rect x="140" y="55" width="22" height="265" rx="3" fill="url(#bedge)" stroke="#2b556f" stroke-width="1.2"/>
+                <!-- corona -->
+                <rect x="88" y="12" width="24" height="20" fill="#24506d"/>
+                <line x1="100" y1="0" x2="100" y2="12" stroke="#14b8a6" stroke-width="2"/>
+                <circle cx="100" cy="2" r="2.5" fill="#F26B4E"/>
+                <!-- ventanas (id por piso para resaltar) -->
+                <g id="floors" fill="#5B9BD5">
+                  <!-- filas de ventanas: cada rect tiene opacidad tenue; JS puede iluminar -->
+                </g>
+                <!-- base -->
+                <rect x="30" y="320" width="140" height="14" rx="3" fill="#0c1f30" stroke="#2b556f" stroke-width="1"/>
+              </svg>
+            </div>
+
+            <!-- Burbujas de reporte (JS controla ciclo de vida) -->
+            <div class="bubble" style="left:8%; top:30%" data-life>
+              <span class="dot"></span> 🔧 Fuga · Piso 7 <span class="ai-chip">Agente IA</span>
+            </div>
+            <div class="bubble" style="right:4%; top:20%" data-life>
+              <span class="dot"></span> 🛗 Ascensor B · Piso 12 <span class="ai-chip">Agente IA</span>
+            </div>
+            <div class="bubble" style="left:2%; bottom:26%" data-life>
+              <span class="dot"></span> 🔊 Ruido · Piso 4 <span class="ai-chip">Agente IA</span>
+            </div>
+            <div class="bubble" style="right:8%; bottom:20%" data-life>
+              <span class="dot"></span> 💡 Luz pasillo · Piso 9 <span class="ai-chip">Agente IA</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTO 2: cartera global — GLOBO TERRÁQUEO holográfico (Canvas 2D, sin librerías).
+             Rota, hace zoom a ciudades y enciende las luces de los PHs administrados. -->
+        <div class="stage-act is-hidden" id="act2">
+          <div class="hero-map-wrap">
+            <div class="hero-map hud-globe">
+              <canvas id="globeCanvas" aria-hidden="true"></canvas>
+              <!-- Readout HUD de la ciudad enfocada (datos ilustrativos) -->
+              <div class="globe-readout" id="globeReadout" aria-hidden="true">
+                <div class="gr-top">RED VORTEX · DEMO ILUSTRATIVA</div>
+                <div class="gr-city" id="grCity">—</div>
+                <div class="gr-row"><span>PHS ACTIVOS</span><b id="grPhs">—</b></div>
+                <div class="gr-row"><span>AL DÍA</span><b id="grOk">—</b></div>
+                <div class="gr-row"><span>COORD</span><b id="grCoord">—</b></div>
+              </div>
+              <div class="map-legend">
+                <span><i style="background:var(--ok)"></i> Al día</span>
+                <span><i style="background:var(--warn)"></i> Atención</span>
+                <span><i style="background:var(--coral)"></i> Reporte activo</span>
+                <span style="opacity:.65">· arrastra para rotar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signos vitales (cifras ILUSTRATIVAS) -->
+      <div class="vitals" role="list" aria-label="Signos vitales de la operación (cifras ilustrativas)">
+        <div class="vital" role="listitem">
+          <div class="v-ic coral">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>
+          </div>
+          <div><div class="v-num" data-count="18">0</div><div class="v-lab">Reportes activos</div></div>
+        </div>
+        <div class="vital" role="listitem">
+          <div class="v-ic ok">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div><div class="v-num" data-count="47">0</div><div class="v-lab">Resueltos hoy</div></div>
+        </div>
+        <div class="vital" role="listitem">
+          <div class="v-ic teal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <div><div class="v-num"><span data-count="4">0</span> min</div><div class="v-lab">Tiempo de respuesta</div></div>
+        </div>
+        <div class="vital" role="listitem">
+          <div class="v-ic">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 12 22 4"/></svg>
+          </div>
+          <div><div class="v-num"><span data-count="96">0</span>%</div><div class="v-lab">Al día</div></div>
+        </div>
+      </div>
+      <p class="illus-note">Cifras ilustrativas de demostración · [CIFRA_ILUSTRATIVA]</p>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       DOS SOLUCIONES
+       ====================================================================== -->
+  <section class="band" id="soluciones">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Dos caminos, una plataforma</span>
+        <h2 class="section-title">Elige cómo Vortex hace latir tu operación</h2>
+        <p class="section-lead">Ya sea un solo edificio o una cartera completa, Vortex se configura a tu medida. Estos son los dos caminos:</p>
+      </div>
+
+      <div class="duo">
+        <!-- Para tu PH -->
+        <article class="sol-card ph reveal">
+          <span class="sol-tag">Para tu PH</span>
+          <h3>Un edificio, modernizado por completo</h3>
+          <p>Tu junta o administrador gestiona el PH con un bot de WhatsApp para residentes y un panel hecho a la medida del edificio.</p>
+          <div class="sol-mock">
+            <!-- Mockup panel PH -->
+            <svg viewBox="0 0 400 210" width="100%" aria-hidden="true">
+              <rect width="400" height="210" fill="#0A1E2E"/>
+              <rect x="0" y="0" width="400" height="30" fill="#12293B"/>
+              <circle cx="18" cy="15" r="4" fill="#F26B4E"/><text x="32" y="20" fill="#F2F6F9" font-size="11" font-family="sans-serif">Panel · Torre Vista</text>
+              <rect x="14" y="44" width="115" height="55" rx="8" fill="#12293B" stroke="#1E3A4F"/>
+              <text x="26" y="66" fill="#8FA6B5" font-size="9" font-family="sans-serif">Reportes</text><text x="26" y="88" fill="#F26B4E" font-size="20" font-family="sans-serif" font-weight="bold">18</text>
+              <rect x="143" y="44" width="115" height="55" rx="8" fill="#12293B" stroke="#1E3A4F"/>
+              <text x="155" y="66" fill="#8FA6B5" font-size="9" font-family="sans-serif">Reservas</text><text x="155" y="88" fill="#5B9BD5" font-size="20" font-family="sans-serif" font-weight="bold">7</text>
+              <rect x="272" y="44" width="115" height="55" rx="8" fill="#12293B" stroke="#1E3A4F"/>
+              <text x="284" y="66" fill="#8FA6B5" font-size="9" font-family="sans-serif">Al día</text><text x="284" y="88" fill="#3FB98A" font-size="20" font-family="sans-serif" font-weight="bold">94%</text>
+              <rect x="14" y="112" width="373" height="84" rx="8" fill="#12293B" stroke="#1E3A4F"/>
+              <polyline points="30,175 80,150 130,160 180,130 230,140 280,110 340,120 375,100" fill="none" stroke="#5B9BD5" stroke-width="2"/>
+              <polyline points="30,180 80,170 130,168 180,158 230,150 280,148 340,140 375,138" fill="none" stroke="#3FB98A" stroke-width="2" stroke-dasharray="3 3"/>
+            </svg>
+          </div>
+          <ul class="sol-feats">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Bot de WhatsApp con las áreas y categorías reales de tu edificio</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Reportes, reservas, finanzas, morosidad y proyectos en un panel</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Personalizado a tu edificio, sin moldes genéricos</li>
+          </ul>
+          <a class="btn btn-primary" href="#contacto">Modernizar mi PH</a>
+        </article>
+
+        <!-- Para empresas administradoras -->
+        <article class="sol-card ent reveal">
+          <span class="sol-tag">Para empresas administradoras</span>
+          <h3>Toda tu cartera, en un centro de comando</h3>
+          <p>Gestiona varios PHs con el Mother Dashboard: rendimiento por edificio y por administrador, mapa en vivo, KPIs y alertas.</p>
+          <div class="sol-mock">
+            <!-- Mockup mother dashboard -->
+            <svg viewBox="0 0 400 210" width="100%" aria-hidden="true">
+              <rect width="400" height="210" fill="#0A1E2E"/>
+              <rect x="0" y="0" width="400" height="30" fill="#12293B"/>
+              <circle cx="18" cy="15" r="4" fill="#5B9BD5"/><text x="32" y="20" fill="#F2F6F9" font-size="11" font-family="sans-serif">Mother Dashboard · 6 PHs</text>
+              <!-- mapa -->
+              <rect x="14" y="44" width="230" height="152" rx="8" fill="#0D2438" stroke="#1E3A4F"/>
+              <path d="M40 90 Q120 70 200 100" stroke="#1E3A4F" fill="none"/><path d="M40 150 Q120 130 210 160" stroke="#1E3A4F" fill="none"/>
+              <circle cx="70" cy="95" r="6" fill="#3FB98A"/><circle cx="140" cy="120" r="6" fill="#F0A64E"/>
+              <circle cx="190" cy="90" r="6" fill="#F26B4E"/><circle cx="110" cy="165" r="6" fill="#3FB98A"/><circle cx="200" cy="160" r="6" fill="#3FB98A"/>
+              <!-- ranking -->
+              <rect x="256" y="44" width="130" height="152" rx="8" fill="#12293B" stroke="#1E3A4F"/>
+              <text x="268" y="62" fill="#8FA6B5" font-size="9" font-family="sans-serif">Ranking admins</text>
+              <rect x="268" y="72" width="90" height="8" rx="4" fill="#3FB98A"/><rect x="268" y="90" width="72" height="8" rx="4" fill="#5B9BD5"/>
+              <rect x="268" y="108" width="60" height="8" rx="4" fill="#5B9BD5"/><rect x="268" y="126" width="44" height="8" rx="4" fill="#F0A64E"/>
+              <rect x="268" y="150" width="106" height="30" rx="6" fill="#0D2438" stroke="#1E3A4F"/>
+              <text x="278" y="169" fill="#F26B4E" font-size="9" font-family="sans-serif">⚠ 2 alertas activas</text>
+            </svg>
+          </div>
+          <ul class="sol-feats">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Mapa en vivo con el estado de cada edificio de tu cartera</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> KPIs, ranking y evaluación de desempeño de administradores</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Aislamiento entre clientes: cada quien ve solo lo suyo</li>
+          </ul>
+          <a class="btn btn-outline" href="https://jdv1418.github.io/vortex-mother-dashboard/" target="_blank" rel="noopener">Ver el Mother Dashboard</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       PERSONALIZADO, NO GENÉRICO
+       ====================================================================== -->
+  <section class="band perso" id="personalizado">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Personalizado, no genérico</span>
+        <h2 class="section-title">Tu edificio no es un molde. Tu plataforma tampoco.</h2>
+        <p class="section-lead">Cada PH recibe una solución configurada a su medida. Nada de plantillas idénticas para todos.</p>
+      </div>
+      <div class="card-grid cols-4">
+        <div class="feature reveal">
+          <div class="f-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+          <h3>Tus áreas</h3><p>Piscina, salón, gimnasio, azotea — solo las áreas que existen en tu edificio, con sus reglas de reserva.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="f-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4z"/><path d="M4 12h10v8H4z"/><path d="M18 12h2v8h-2z"/></svg></div>
+          <h3>Tus reglas</h3><p>Horarios, cuotas, categorías de reportes y flujos de aprobación configurados como los maneja tu junta.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="f-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18"/></svg></div>
+          <h3>Tu marca</h3><p>Nombre, logo y colores de tu PH en el panel y en los mensajes que reciben tus residentes.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="f-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
+          <h3>Tus flujos</h3><p>Cómo entra un reporte, quién lo atiende y cómo se cierra — adaptado a la operación real de tu edificio.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       CÓMO FUNCIONA (incluye a los Agentes de IA)
+       ====================================================================== -->
+  <section class="band perso" id="como">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Agentes de IA · Cómo funciona</span>
+        <h2 class="section-title">De cada solicitud a resultados que puedes medir</h2>
+        <p class="section-lead">Vortex no es un chat: es tu herramienta administrativa. Captura cada solicitud automáticamente, organiza el trabajo y te entrega resultados medibles — menos tiempo operando, más control. Detrás, Agentes Especiales de IA trabajan 24/7, siempre supervisados por tu equipo.</p>
+      </div>
+      <!-- Capacidades de los Agentes de IA (fusionado aquí) -->
+      <div class="agent-chips reveal" aria-label="Capacidades de los Agentes de IA">
+        <span class="a-chip">Entienden por WhatsApp</span>
+        <span class="a-chip">Clasifican y enrutan</span>
+        <span class="a-chip">Automatizan seguimientos</span>
+        <span class="a-chip">Avisan y resuelven</span>
+      </div>
+      <div class="how">
+        <div class="steps">
+          <div class="step reveal"><div class="s-no">1</div><div><h3>Todo entra en un solo lugar</h3><p>Solicitudes, pagos y reservas llegan por WhatsApp y quedan registrados automáticamente. Nada se pierde, nada se captura a mano.</p></div></div>
+          <div class="step reveal"><div class="s-no">2</div><div><h3>La IA organiza el trabajo por ti</h3><p>Entiende, prioriza y enruta cada caso al responsable. Horas de gestión manual, eliminadas.</p></div></div>
+          <div class="step reveal"><div class="s-no">3</div><div><h3>Resuelves con control total</h3><p>Reportes, reservas, finanzas y morosidad en un panel: atiendes, apruebas y das seguimiento sin perder el hilo.</p></div></div>
+          <div class="step reveal"><div class="s-no">4</div><div><h3>Resultados medibles para decidir</h3><p>KPIs, tiempos y ranking en el Mother Dashboard: monitorea el desempeño de cada edificio y administrador con datos, no opiniones.</p></div></div>
+        </div>
+
+        <!-- Chat WhatsApp animado -->
+        <div class="chat reveal" id="chatDemo" aria-hidden="true">
+          <div class="chat-head">
+            <div class="ava">V</div>
+            <div><div class="ct">Vortex · Torre Vista</div><div class="cs">● en línea</div></div>
+          </div>
+          <div class="chat-body" id="chatBody">
+            <!-- mensajes inyectados/animados por JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       EMPRESAS ADMINISTRADORAS · MOTHER DASHBOARD
+       ====================================================================== -->
+  <section class="band ent-band" id="empresas">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">El Mother Dashboard</span>
+        <h2 class="section-title">Un centro de comando para toda tu cartera</h2>
+        <p class="section-lead">Para empresas que gestionan varios PHs: todos tus edificios en una sola vista —qué pasa, dónde y quién lo atiende— y, justo debajo, el desempeño de cada PH y cada administrador medido con datos.</p>
+      </div>
+      <div class="ent-grid">
+        <div class="dash-mock reveal">
+          <div class="dash-top">
+            <div class="dt-title">Mother Dashboard</div>
+            <div class="dash-dots"><i></i><i></i><i></i></div>
+          </div>
+          <div class="dash-kpis">
+            <div class="dash-kpi"><div class="k-n" style="color:var(--data)">6</div><div class="k-l">PHs activos</div></div>
+            <div class="dash-kpi"><div class="k-n" style="color:var(--coral)">3</div><div class="k-l">Alertas</div></div>
+            <div class="dash-kpi"><div class="k-n" style="color:var(--ok)">92%</div><div class="k-l">Al día</div></div>
+          </div>
+          <div class="dash-map">
+            <svg viewBox="0 0 500 200" preserveAspectRatio="xMidYMid slice">
+              <g stroke="#1E3A4F" fill="none" stroke-width="1.2" opacity=".6">
+                <path d="M0 70 Q130 40 260 80 T500 70"/><path d="M0 140 Q140 110 280 150 T500 140"/>
+              </g>
+              <g id="dashPins"></g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="ent-feats">
+          <div class="ent-feat reveal">
+            <div class="ef-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-5-7-11a7 7 0 0 1 14 0c0 6-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+            <div><h3>Mapa en vivo por PH</h3><p>Pines coloreados por estado (al día / atención / reporte activo) que laten según lo que ocurre en cada edificio de tu cartera.</p></div>
+          </div>
+          <div class="ent-feat reveal">
+            <div class="ef-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+            <div><h3>Alertas en tiempo real</h3><p>Los edificios que requieren atención suben a la superficie antes de que se vuelvan un problema.</p></div>
+          </div>
+          <a class="btn btn-primary" href="https://jdv1418.github.io/vortex-mother-dashboard/" target="_blank" rel="noopener" style="margin-top:.5rem">Explorar el dashboard en vivo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       DESEMPEÑO POR DATOS · KPIs (PH + administradores)
+       ====================================================================== -->
+  <section class="band perf-band" id="desempeno">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Desempeño medible · KPIs</span>
+        <h2 class="section-title">Evalúa por datos, no por opiniones</h2>
+        <p class="section-lead">La ventaja real de Vortex: cada edificio y cada administrador se miden con indicadores objetivos. Deja de decidir por percepción y controla la operación con cifras claras y comparables.</p>
+      </div>
+
+      <!-- BLOQUE 1: KPIs del edificio -->
+      <div class="perf-block reveal">
+        <div class="perf-sub">
+          <span class="ps-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>
+          KPIs del edificio
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-tile">
+            <div class="k-label">Resolución de reportes</div>
+            <div class="k-value">94<small>%</small></div>
+            <div class="k-delta good">▲ +6 pts <span>vs. mes anterior</span></div>
+            <svg class="k-spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,28 20,26 40,22 60,20 80,14 100,12 120,7" fill="none" stroke="#3FB98A" stroke-width="2"/></svg>
+          </div>
+          <div class="kpi-tile">
+            <div class="k-label">Tiempo de respuesta</div>
+            <div class="k-value">4 <small>min</small></div>
+            <div class="k-delta good">▼ −2 min <span>más rápido</span></div>
+            <svg class="k-spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,8 20,12 40,10 60,16 80,18 100,24 120,27" fill="none" stroke="#5B9BD5" stroke-width="2"/></svg>
+          </div>
+          <div class="kpi-tile">
+            <div class="k-label">Residentes al día</div>
+            <div class="k-value">96<small>%</small></div>
+            <div class="k-delta good">▲ +3 pts <span>morosidad a la baja</span></div>
+            <svg class="k-spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,22 20,20 40,21 60,16 80,15 100,11 120,9" fill="none" stroke="#3FB98A" stroke-width="2"/></svg>
+          </div>
+          <div class="kpi-tile">
+            <div class="k-label">Satisfacción residentes</div>
+            <div class="k-value">4.7<small>/5</small></div>
+            <div class="k-delta good">▲ +0.2 <span>vs. mes anterior</span></div>
+            <svg class="k-spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,24 20,22 40,20 60,19 80,15 100,14 120,10" fill="none" stroke="#14b8a6" stroke-width="2"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 2: Tablero de desempeño de administradores (lo más importante) -->
+      <div class="perf-block reveal">
+        <div class="perf-sub admins">
+          <span class="ps-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          Ranking y evaluación de administradores
+        </div>
+        <div class="score-scroll">
+          <div class="score-card" role="table" aria-label="Tablero de desempeño de administradores (datos ilustrativos)">
+            <div class="score-head" role="row">
+              <span role="columnheader">Administrador</span>
+              <span role="columnheader">Resolución</span>
+              <span role="columnheader">Resp. prom.</span>
+              <span role="columnheader">Al día</span>
+              <span role="columnheader">Satisfacción</span>
+              <span role="columnheader">Puntaje</span>
+            </div>
+            <!-- Fila 1 -->
+            <div class="score-row" role="row">
+              <span class="admin" role="cell"><span class="rank-no">1</span><span class="avatar-sm">AR</span><span><span class="a-name">Ana Ríos</span><br><span class="a-ph">Torre Vista</span></span></span>
+              <span role="cell"><span class="cell-metric" style="color:var(--ok)">96%</span><div class="metric-bar"><i style="width:96%;background:var(--ok)"></i></div></span>
+              <span class="cell-metric" role="cell">3 min</span>
+              <span class="cell-metric" role="cell">97%</span>
+              <span class="cell-metric" role="cell">4.8/5</span>
+              <span role="cell"><span class="score-badge exc">94 · Excelente</span></span>
+            </div>
+            <!-- Fila 2 -->
+            <div class="score-row" role="row">
+              <span class="admin" role="cell"><span class="rank-no">2</span><span class="avatar-sm" style="background:var(--data)">LP</span><span><span class="a-name">Luis Peña</span><br><span class="a-ph">Bahía 300</span></span></span>
+              <span role="cell"><span class="cell-metric" style="color:var(--data)">91%</span><div class="metric-bar"><i style="width:91%;background:var(--data)"></i></div></span>
+              <span class="cell-metric" role="cell">5 min</span>
+              <span class="cell-metric" role="cell">93%</span>
+              <span class="cell-metric" role="cell">4.5/5</span>
+              <span role="cell"><span class="score-badge good2">88 · Muy bien</span></span>
+            </div>
+            <!-- Fila 3 -->
+            <div class="score-row" role="row">
+              <span class="admin" role="cell"><span class="rank-no">3</span><span class="avatar-sm" style="background:var(--warn)">MC</span><span><span class="a-name">Marta Coba</span><br><span class="a-ph">Altavista</span></span></span>
+              <span role="cell"><span class="cell-metric" style="color:var(--warn)">84%</span><div class="metric-bar"><i style="width:84%;background:var(--warn)"></i></div></span>
+              <span class="cell-metric" role="cell">8 min</span>
+              <span class="cell-metric" role="cell">88%</span>
+              <span class="cell-metric" role="cell">4.2/5</span>
+              <span role="cell"><span class="score-badge warn2">79 · Aceptable</span></span>
+            </div>
+            <!-- Fila 4 -->
+            <div class="score-row" role="row">
+              <span class="admin" role="cell"><span class="rank-no">4</span><span class="avatar-sm" style="background:var(--coral)">JS</span><span><span class="a-name">Jorge Sáez</span><br><span class="a-ph">Central Park</span></span></span>
+              <span role="cell"><span class="cell-metric" style="color:var(--coral)">72%</span><div class="metric-bar"><i style="width:72%;background:var(--coral)"></i></div></span>
+              <span class="cell-metric" role="cell">12 min</span>
+              <span class="cell-metric" role="cell">80%</span>
+              <span class="cell-metric" role="cell">3.9/5</span>
+              <span role="cell"><span class="score-badge low">68 · A mejorar</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="perf-note">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+          <span>El puntaje combina resolución de reportes, tiempo de respuesta, morosidad y satisfacción en un solo indicador comparable entre edificios. Así la empresa administradora evalúa a cada administrador con criterios objetivos y detecta a tiempo dónde reforzar. <em>Datos ilustrativos.</em></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       CONFIANZA Y ASPECTO LEGAL (banda compacta)
+       ====================================================================== -->
+  <section class="trust-slim" id="confianza">
+    <div class="wrap">
+      <div class="ts-grid">
+        <div class="ts-item reveal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+          <div><b>Aislamiento de datos</b><span>Cada PH y cada empresa ve únicamente lo suyo. Nunca se mezclan clientes.</span></div>
+        </div>
+        <div class="ts-item reveal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          <div><b>Proveedor de tecnología</b><span>Vortex no administra el PH ni asume sus responsabilidades legales.</span></div>
+        </div>
+        <div class="ts-item reveal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+          <div><b>Privacidad y cumplimiento</b><span>Respeto a la Ley de Propiedad Horizontal de Panamá.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       CTA FINAL
+       ====================================================================== -->
+  <section class="final-cta">
+    <div class="wrap reveal">
+      <h2>Lleva tu edificio al futuro con Vortex</h2>
+      <p>Conversemos y te mostramos, con tu propio edificio, cómo se siente ver la administración latir en tiempo real — estés donde estés: todo funciona por WhatsApp y la nube.</p>
+      <!-- Roadmap comprimido (ilustrativo, sin compromiso de entrega) -->
+      <div class="road-chips" aria-label="Dirección de producto (ilustrativa)">
+        <span class="r-chip"><b>HOY</b> IA conversacional por WhatsApp</span>
+        <span class="r-chip"><b>EN CAMINO</b> Insights predictivos</span>
+        <span class="r-chip"><b>VISIÓN</b> Ecosistema Vortex</span>
+      </div>
+      <div class="hero-ctas" style="margin-top:2rem">
+        <!-- PRIMARIO WhatsApp -->
+        <a class="btn btn-primary" href="https://wa.me/50761640089" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2.1.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.5c-.2.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.6-.1l1.9.9c.3.1.5.2.5.4.1.2.1.9-.1 1.5Z"/></svg>
+          Hablar por WhatsApp
+        </a>
+        <a class="btn btn-outline" href="#contacto">Solicitar demo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       FORMULARIO
+       ====================================================================== -->
+  <section class="form-band" id="contacto">
+    <div class="wrap band">
+      <div class="form-grid">
+        <div class="form-info reveal">
+          <h2>Solicita tu demo personalizada</h2>
+          <p>Cuéntanos de tu edificio o tu cartera. Preparamos una demostración con tu caso real y te mostramos ambos caminos de Vortex.</p>
+          <div class="contact-list">
+            <!-- PRIMARIO WhatsApp -->
+            <a href="https://wa.me/50761640089" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Z"/></svg>
+              WhatsApp directo
+            </a>
+            <!-- TERCIARIO email -->
+            <a href="mailto:hola@vortexadmin.com">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+              hola@vortexadmin.com
+            </a>
+            <a href="https://jdv1418.github.io/vortex-mother-dashboard/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+              Ver el dashboard en vivo
+            </a>
+          </div>
+        </div>
+
+        <!-- Formulario: envía por mailto (placeholder). Sustituir action/handler cuando exista backend. -->
+        <form class="contact reveal" id="contactForm" novalidate>
+          <div class="field">
+            <label for="f-nombre">Nombre</label>
+            <input id="f-nombre" name="nombre" type="text" autocomplete="name" required />
+          </div>
+          <div class="field row">
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <label for="f-ph">Nombre del PH / edificio</label>
+              <input id="f-ph" name="ph" type="text" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-tipo">¿PH individual o empresa administradora?</label>
+            <select id="f-tipo" name="tipo">
+              <option value="PH individual">PH individual</option>
+              <option value="Empresa administradora">Empresa administradora</option>
+              <option value="Aún no estoy seguro">Aún no estoy seguro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-msg">Mensaje</label>
+            <textarea id="f-msg" name="mensaje" placeholder="Cuéntanos qué te gustaría lograr con Vortex…"></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit" style="justify-self:start">Enviar solicitud</button>
+          <p class="illus-note" style="text-align:left; margin-top:0">Al enviar se abrirá tu correo hacia hola@vortexadmin.com. (Sustituir por un handler real en producción.)</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ======================================================================
+     MODO DASHBOARD — toggle flotante + consola
+     Al activarse, las secciones reales se MUEVEN a los paneles y se
+     devuelven a su lugar al salir (cero duplicación de contenido).
+     ====================================================================== -->
+<button class="dash-toggle" id="dashToggle" aria-pressed="false" aria-label="Activar modo dashboard">⌘ MODO DASHBOARD</button>
+
+<div class="dm-root" id="dmRoot" role="dialog" aria-modal="true" aria-label="Consola Vortex">
+  <div class="dm-top">
+    <div class="dm-brand">
+      <svg width="22" height="22" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M20 3 C10 3 3 10 3 20 C3 27 8 33 15 35 L20 20 L28 32 C34 28 37 24 37 20 C37 10 30 3 20 3 Z" stroke="#14b8a6" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+      </svg>
+      Vortex <small>· CONSOLA</small>
+    </div>
+    <div class="dm-status">SISTEMA EN LÍNEA</div>
+    <button class="btn btn-ghost dm-exit" id="dmExit">Salir ✕</button>
+  </div>
+  <nav class="dm-side" role="tablist" aria-label="Secciones de la consola">
+    <button class="dm-tab" role="tab" data-panel="inicio" aria-selected="true"><i>01</i> INICIO</button>
+    <button class="dm-tab" role="tab" data-panel="soluciones" aria-selected="false"><i>02</i> SOLUCIONES</button>
+    <button class="dm-tab" role="tab" data-panel="operacion" aria-selected="false"><i>03</i> OPERACIÓN</button>
+    <button class="dm-tab" role="tab" data-panel="empresas" aria-selected="false"><i>04</i> EMPRESAS</button>
+    <button class="dm-tab" role="tab" data-panel="desempeno" aria-selected="false"><i>05</i> DESEMPEÑO</button>
+    <button class="dm-tab" role="tab" data-panel="contacto" aria-selected="false"><i>06</i> CONTACTO</button>
+  </nav>
+  <div class="dm-main">
+    <div class="dm-panel on" data-panel="inicio" role="tabpanel"></div>
+    <div class="dm-panel" data-panel="soluciones" role="tabpanel"></div>
+    <div class="dm-panel" data-panel="operacion" role="tabpanel"></div>
+    <div class="dm-panel" data-panel="empresas" role="tabpanel"></div>
+    <div class="dm-panel" data-panel="desempeno" role="tabpanel"></div>
+    <div class="dm-panel" data-panel="contacto" role="tabpanel"></div>
+  </div>
+</div>
+
+<!-- ======================================================================
+     FOOTER
+     ====================================================================== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="logo" href="#top">
+          <svg class="vortex-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <path d="M20 3 C10 3 3 10 3 20 C3 27 8 33 15 35 L20 20 L28 32 C34 28 37 24 37 20 C37 10 30 3 20 3 Z" stroke="url(#vg)" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+          </svg>
+          <span>Vortex</span>
+        </a>
+        <p>La plataforma impulsada por Agentes de IA que hace la administración de edificios moderna, viva y transparente.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h4>Producto</h4>
+          <a href="#soluciones">Para tu PH</a>
+          <a href="#empresas">Para empresas</a>
+          <a href="#como">Agentes de IA</a>
+          <a href="#como">Cómo funciona</a>
+        </div>
+        <div class="foot-col">
+          <h4>Recursos</h4>
+          <a href="https://jdv1418.github.io/vortex-mother-dashboard/" target="_blank" rel="noopener">Dashboard en vivo</a>
+          <a href="#contacto">Solicitar demo</a>
+          <!-- PRIMARIO WhatsApp -->
+          <a href="https://wa.me/50761640089" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+        <div class="foot-col">
+          <h4>Contacto</h4>
+          <!-- TERCIARIO email -->
+          <a href="mailto:hola@vortexadmin.com">hola@vortexadmin.com</a>
+          <a href="#contacto">Formulario</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> Vortex · Panamá</span>
+      <span>Proveedor de tecnología · No administra PHs</span>
+    </div>
+    <p class="disclaimer">
+      Vortex es una plataforma tecnológica de asistencia y automatización para la administración de propiedad horizontal.
+      No sustituye ni asume las funciones legales de la junta directiva o del administrador del PH. Las cifras mostradas son
+      ilustrativas. Diseñado con respeto a la Ley de Propiedad Horizontal de la República de Panamá.
+    </p>
+  </div>
+</footer>
+
+<script>
+/* ==========================================================================
+   VORTEX — interacciones (vanilla JS, sin dependencias)
+   ========================================================================== */
+(function () {
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* --- año footer --- */
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  /* --- navbar scrolled + menú móvil --- */
+  var nav = document.getElementById("nav");
+  window.addEventListener("scroll", function () {
+    nav.classList.toggle("scrolled", window.scrollY > 12);
+  }, { passive: true });
+
+  var toggle = document.getElementById("navToggle");
+  var links = document.getElementById("navLinks");
+  toggle.addEventListener("click", function () {
+    var open = links.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  links.addEventListener("click", function (e) {
+    if (e.target.tagName === "A") { links.classList.remove("open"); toggle.setAttribute("aria-expanded", "false"); }
+  });
+
+  /* --- generar ventanas del edificio (silueta SVG) --- */
+  var floors = document.getElementById("floors");
+  if (floors) {
+    var cols = [64, 78, 92, 106, 120]; // x de ventanas cuerpo
+    for (var f = 0; f < 16; f++) {
+      var y = 46 + f * 17;
+      for (var c = 0; c < cols.length; c++) {
+        var r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        r.setAttribute("x", cols[c]); r.setAttribute("y", y);
+        r.setAttribute("width", 8); r.setAttribute("height", 9); r.setAttribute("rx", 1.5);
+        r.setAttribute("opacity", (Math.random() * 0.5 + 0.15).toFixed(2));
+        floors.appendChild(r);
+      }
+    }
+  }
+
+  /* --- HERO: toggle de actos --- */
+  var act1 = document.getElementById("act1"), act2 = document.getElementById("act2");
+  var b1 = document.getElementById("actBtn1"), b2 = document.getElementById("actBtn2");
+  var autoTimer = null;
+  function setAct(n) {
+    var one = n === 1;
+    act1.classList.toggle("is-hidden", !one);
+    act2.classList.toggle("is-hidden", one);
+    b1.setAttribute("aria-pressed", one ? "true" : "false");
+    b2.setAttribute("aria-pressed", one ? "false" : "true");
+    if (window.__globeSync) window.__globeSync(); /* pausa/activa el globo */
+  }
+  b1.addEventListener("click", function () { setAct(1); stopAuto(); });
+  b2.addEventListener("click", function () { setAct(2); stopAuto(); });
+  function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+  window.__stopActAuto = stopAuto; /* el globo también puede detener la auto-alternancia */
+  /* auto-alterna los actos hasta que el usuario interactúe (respeta reduced-motion) */
+  if (!reduce) {
+    var cur = 1;
+    autoTimer = setInterval(function () { cur = cur === 1 ? 2 : 1; setAct(cur); }, 6500);
+  }
+
+  /* --- HERO: ciclo de vida de burbujas (el "latido") --- */
+  var bubbles = Array.prototype.slice.call(document.querySelectorAll(".bubble[data-life]"));
+  if (!reduce && bubbles.length) {
+    bubbles.forEach(function (b, i) {
+      setTimeout(function () { cycleBubble(b); }, 500 + i * 900);
+    });
+  } else {
+    bubbles.forEach(function (b) { b.classList.add("show"); });
+  }
+  function cycleBubble(b) {
+    b.classList.remove("resolved", "fade");
+    b.querySelector(".ai-chip") && (b.querySelector(".ai-chip").textContent = "Agente IA");
+    b.classList.add("show");
+    // nuevo (coral) -> agente procesa -> resuelto (verde) -> desvanece -> reaparece
+    setTimeout(function () {
+      b.classList.add("resolved");
+      var chip = b.querySelector(".ai-chip");
+      if (chip) chip.textContent = "✓ Resuelto";
+    }, 2600);
+    setTimeout(function () { b.classList.add("fade"); }, 4600);
+    setTimeout(function () {
+      b.classList.remove("show", "fade", "resolved");
+      setTimeout(function () { cycleBubble(b); }, 800 + Math.random() * 1500);
+    }, 5600);
+  }
+
+  /* --- Pines del mockup Mother Dashboard (sección empresas) --- */
+  var color = { ok: "#3FB98A", warn: "#F0A64E", coral: "#F26B4E" };
+  function drawPins(target, data, scale) {
+    var g = document.getElementById(target);
+    if (!g) return;
+    data.forEach(function (p, i) {
+      var col = color[p.s];
+      var halo = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      halo.setAttribute("class", "halo-c"); halo.setAttribute("cx", p.x); halo.setAttribute("cy", p.y);
+      halo.setAttribute("r", 6); halo.setAttribute("fill", col); halo.setAttribute("opacity", ".5");
+      halo.style.animationDelay = (i * 0.4) + "s";
+      var core = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      core.setAttribute("class", "core"); core.setAttribute("cx", p.x); core.setAttribute("cy", p.y);
+      core.setAttribute("r", 6); core.setAttribute("fill", col);
+      var grp = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      grp.setAttribute("class", "map-pin");
+      grp.appendChild(halo); grp.appendChild(core);
+      g.appendChild(grp);
+    });
+  }
+  drawPins("dashPins", [
+    { x: 90, y: 80, s: "ok" }, { x: 180, y: 120, s: "warn" }, { x: 260, y: 70, s: "coral" },
+    { x: 340, y: 130, s: "ok" }, { x: 420, y: 90, s: "ok" }, { x: 200, y: 160, s: "ok" }
+  ]);
+
+  /* --- Parallax / tilt del edificio siguiendo el cursor --- */
+  var building = document.getElementById("heroBuilding");
+  var stage = document.getElementById("heroStage");
+  if (building && stage && !reduce && window.matchMedia("(pointer:fine)").matches) {
+    stage.addEventListener("mousemove", function (e) {
+      var r = stage.getBoundingClientRect();
+      var dx = (e.clientX - r.left) / r.width - 0.5;
+      var dy = (e.clientY - r.top) / r.height - 0.5;
+      building.style.transform = "rotateY(" + (dx * 8) + "deg) rotateX(" + (-dy * 6) + "deg) translateZ(0)";
+    });
+    stage.addEventListener("mouseleave", function () { building.style.transform = ""; });
+    building.style.transition = "transform .3s ease";
+  }
+
+  /* --- Contadores animados --- */
+  function animateCount(el) {
+    var target = parseFloat(el.getAttribute("data-count"));
+    if (reduce) { el.textContent = format(target); return; }
+    var start = performance.now(), dur = 1400;
+    function tick(now) {
+      var t = Math.min((now - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = format(Math.round(target * eased));
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  function format(n) { return n >= 1000 ? n.toLocaleString("es-PA") : String(n); }
+
+  /* --- Chat WhatsApp animado --- */
+  var chatBody = document.getElementById("chatBody");
+  var chatScript = [
+    { who: "me", name: "Residente · Apto 7B", text: "Hola, hay una fuga de agua en el pasillo del piso 7 🚰" },
+    { who: "bot", name: "Agente IA · Vortex", text: "Recibido. Registré tu reporte y lo clasifiqué como urgente.", tag: "🔧 Fuga · Prioridad alta" },
+    { who: "bot", name: "Agente IA · Vortex", text: "El administrador ya fue notificado. Te aviso cuando se atienda ✅" },
+    { who: "me", name: "Residente · Apto 7B", text: "¡Gracias! ¿Y puedo reservar el salón para el sábado?" },
+    { who: "bot", name: "Agente IA · Vortex", text: "Claro. El salón está libre el sábado. ¿Confirmo de 4:00 a 8:00 pm?", tag: "📅 Reserva · Salón social" }
+  ];
+  function renderChat() {
+    chatBody.innerHTML = "";
+    chatScript.forEach(function (m, i) {
+      var el = document.createElement("div");
+      el.className = "msg " + m.who;
+      var html = '<span class="who">' + m.name + "</span>" + escapeHtml(m.text);
+      if (m.tag) html += '<span class="tag">' + m.tag + "</span>";
+      el.innerHTML = html;
+      chatBody.appendChild(el);
+      if (reduce) { el.classList.add("in"); }
+      else { setTimeout(function () { el.classList.add("in"); chatBody.scrollTop = chatBody.scrollHeight; }, 500 + i * 1100); }
+    });
+  }
+  function escapeHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+  /* --- IntersectionObserver: reveals + disparadores --- */
+  var chatStarted = false, countStarted = false;
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add("in");
+        if (en.target.id === "chatDemo" && !chatStarted) { chatStarted = true; renderChat(); }
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll(".reveal, #chatDemo").forEach(function (el) { io.observe(el); });
+
+    // contadores: dispara cuando el hero/stats entran
+    var countObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          en.target.querySelectorAll("[data-count]").forEach(animateCount);
+          countObs.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    document.querySelectorAll(".vitals, .stats-grid").forEach(function (el) { countObs.observe(el); });
+  } else {
+    // fallback sin IO
+    document.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("in"); });
+    document.querySelectorAll("[data-count]").forEach(animateCount);
+    renderChat();
+  }
+
+  /* ==========================================================================
+     GLOBO TERRÁQUEO HOLOGRÁFICO — Canvas 2D 100% vanilla (hero, acto 2)
+     Rota, hace zoom a ciudades con PHs administrados y enciende sus luces.
+     ========================================================================== */
+  (function () {
+    var canvas = document.getElementById("globeCanvas");
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    var D2R = Math.PI / 180;
+    var COL = { ok: "#3FB98A", warn: "#F0A64E", coral: "#F26B4E" };
+
+    /* --- Continentes aproximados (lon,lat) → nube de puntos holográfica --- */
+    var POLYS = [
+      /* Norteamérica + Centroamérica */
+      [[-168,66],[-158,71],[-140,70],[-125,72],[-110,73],[-95,73],[-85,70],[-80,73],[-70,62],[-60,55],[-55,52],[-65,45],[-70,42],[-75,38],[-80,32],[-81,26],[-84,30],[-90,29],[-96,27],[-97,22],[-105,20],[-97,16],[-92,14],[-85,11],[-80,8],[-83,9],[-88,14],[-95,17],[-106,24],[-112,26],[-117,33],[-124,40],[-124,48],[-131,55],[-140,60],[-152,60],[-160,56],[-166,62]],
+      /* Sudamérica */
+      [[-78,8],[-72,12],[-64,11],[-60,8],[-52,5],[-44,-1],[-35,-6],[-35,-10],[-39,-14],[-40,-21],[-47,-25],[-52,-31],[-57,-36],[-62,-39],[-65,-45],[-68,-52],[-66,-55],[-71,-54],[-73,-46],[-73,-38],[-71,-31],[-70,-22],[-70,-16],[-76,-12],[-79,-6],[-81,-2],[-79,2]],
+      /* África */
+      [[-17,15],[-16,22],[-10,29],[-6,35],[0,37],[10,37],[20,32],[30,31],[34,27],[36,22],[38,18],[43,11],[48,11],[51,10],[46,3],[41,-2],[40,-11],[36,-18],[33,-26],[27,-33],[20,-35],[17,-33],[15,-27],[12,-18],[9,-7],[9,1],[5,5],[-2,5],[-8,5],[-13,9]],
+      /* Europa */
+      [[-9,37],[-9,43],[-4,44],[-1,46],[-4,48],[0,49],[4,51],[8,54],[8,57],[12,56],[13,54],[18,55],[21,57],[24,59],[30,60],[28,63],[31,70],[40,68],[45,66],[50,60],[48,55],[40,50],[35,47],[30,46],[28,42],[24,40],[20,40],[16,41],[13,44],[9,44],[5,43],[3,42],[-2,43]],
+      /* Asia */
+      [[30,70],[45,68],[60,70],[75,73],[90,76],[105,77],[120,74],[135,72],[150,70],[165,69],[178,66],[179,64],[170,62],[162,58],[158,53],[150,50],[142,47],[137,43],[132,38],[127,33],[122,27],[116,22],[110,18],[107,12],[104,7],[103,2],[99,7],[97,13],[92,20],[88,22],[85,19],[81,13],[78,9],[75,15],[72,20],[68,23],[63,25],[58,26],[54,25],[52,28],[48,29],[44,37],[40,41],[34,42],[30,46],[35,47],[40,50],[48,55],[50,60],[45,66],[40,68]],
+      /* Arabia */
+      [[35,29],[39,32],[48,30],[56,26],[59,22],[57,17],[52,14],[45,13],[43,17],[39,21],[35,28]],
+      /* Australia */
+      [[114,-22],[122,-18],[130,-12],[137,-12],[142,-11],[146,-15],[149,-20],[153,-27],[151,-33],[146,-39],[140,-38],[135,-35],[129,-32],[124,-33],[115,-34],[113,-26]],
+      /* Groenlandia */
+      [[-45,60],[-52,63],[-55,67],[-53,71],[-45,78],[-35,80],[-25,78],[-20,70],[-25,65],[-35,62]]
+    ];
+    /* Islas sueltas (puntos directos) */
+    var EXTRA = [[138,36],[140,40],[133,34],[-3,54],[-6,53],[47,-19],[46,-22],[173,-42],[175,-39],[110,-7],[117,-1],[122,-2],[101,1],[121,15],[123,11],[-79,22],[-76,20],[-66,18],[-61,15],[142,-6],[147,-8],[178,-18]];
+
+    function inPoly(x, y, poly) {
+      var inside = false;
+      for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        var xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+      }
+      return inside;
+    }
+    var dots = [];
+    for (var la = -58; la <= 80; la += 3) {
+      var st = 3 / Math.max(.3, Math.cos(la * D2R)); /* densidad pareja en la esfera */
+      for (var lo = -180; lo < 180; lo += st) {
+        for (var pi = 0; pi < POLYS.length; pi++) {
+          if (inPoly(lo, la, POLYS[pi])) { dots.push([lo, la]); break; }
+        }
+      }
+    }
+    EXTRA.forEach(function (p) { dots.push(p); });
+
+    /* Graticule precalculado (meridianos + paralelos) */
+    var GRID = [];
+    for (var m = -180; m < 180; m += 30) { var g1 = []; for (var a1 = -85; a1 <= 85; a1 += 5) g1.push([m, a1]); GRID.push(g1); }
+    for (var pl = -60; pl <= 60; pl += 30) { var g2 = []; for (var a2 = -180; a2 <= 180; a2 += 5) g2.push([a2, pl]); GRID.push(g2); }
+
+    /* --- Ciudades con PHs administrados (DATOS ILUSTRATIVOS) --- */
+    var CITIES = [
+      { name: "CIUDAD DE PANAMÁ", lon: -79.52, lat: 8.98,  phs: 12, ok: 96, alert: false },
+      { name: "MIAMI",            lon: -80.19, lat: 25.76, phs: 5,  ok: 94, alert: false },
+      { name: "BOGOTÁ",           lon: -74.07, lat: 4.61,  phs: 7,  ok: 92, alert: true  },
+      { name: "CIUDAD DE MÉXICO", lon: -99.13, lat: 19.43, phs: 6,  ok: 95, alert: true  },
+      { name: "SANTO DOMINGO",    lon: -69.93, lat: 18.49, phs: 3,  ok: 93, alert: false },
+      { name: "MADRID",           lon: -3.70,  lat: 40.42, phs: 4,  ok: 97, alert: false }
+    ];
+    CITIES.forEach(function (c, ci2) {
+      c.lights = [];
+      for (var i = 0; i < c.phs; i++) {
+        var ang = i * 2.399963 + ci2;               /* ángulo áureo: dispersión natural */
+        var rad = .35 + ((i * 37) % 100) / 100 * 1.15;
+        var stt = (i === 0 && c.alert) ? "coral" : ((i % 5 === 3) ? "warn" : "ok");
+        c.lights.push({ lon: c.lon + Math.cos(ang) * rad, lat: c.lat + Math.sin(ang) * rad * .8, s: stt });
+      }
+    });
+
+    /* --- Estado de cámara y máquina de estados --- */
+    var view = { lon: -60, lat: 12, s: 1 };
+    var mode = "roam", t = 0, ci = 0, from = null, resumeAt = 0;
+    var T_APPROACH = 2400, T_HOLD = 3000, T_DEPART = 1600, T_ROAM = 3200;
+    var W, H, CX, CY, BR, DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var running = false, inView = false, last = 0, P = {};
+
+    function resize() {
+      var r = canvas.parentElement.getBoundingClientRect();
+      W = r.width; H = r.height;
+      canvas.width = W * DPR; canvas.height = H * DPR;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      CX = W / 2; CY = H / 2 + H * .02; BR = Math.min(W, H) * .42;
+      if (!running) draw(performance.now());
+    }
+    window.addEventListener("resize", resize);
+
+    function norm(l) { while (l > 180) l -= 360; while (l < -180) l += 360; return l; }
+    function lerpLon(a, b, k) { return norm(a + norm(b - a) * k); }
+    function ease(x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+
+    /* Proyección ortográfica con centro (view.lon, view.lat) */
+    function project(lon, lat, out) {
+      var f = lat * D2R, l = (lon - view.lon) * D2R, f0 = view.lat * D2R;
+      var cf = Math.cos(f), sf = Math.sin(f), cl = Math.cos(l), sl = Math.sin(l);
+      out.x = CX + BR * view.s * (cf * sl);
+      out.y = CY - BR * view.s * (Math.cos(f0) * sf - Math.sin(f0) * cf * cl);
+      out.z = Math.sin(f0) * sf + Math.cos(f0) * cf * cl;
+      return out;
+    }
+    function strokePath(pts) {
+      ctx.beginPath();
+      var pen = false;
+      for (var i = 0; i < pts.length; i++) {
+        project(pts[i][0], pts[i][1], P);
+        if (P.z > .02) { if (pen) ctx.lineTo(P.x, P.y); else { ctx.moveTo(P.x, P.y); pen = true; } }
+        else pen = false;
+      }
+      ctx.stroke();
+    }
+
+    function drawReticle(x, y, r, k, tt) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, Math.min(1, k));
+      ctx.strokeStyle = "#F26B4E"; ctx.lineWidth = 1.4;
+      var b = r * .32;
+      [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function (q) {
+        ctx.beginPath();
+        ctx.moveTo(x + q[0] * r, y + q[1] * r - q[1] * b);
+        ctx.lineTo(x + q[0] * r, y + q[1] * r);
+        ctx.lineTo(x + q[0] * r - q[0] * b, y + q[1] * r);
+        ctx.stroke();
+      });
+      ctx.setLineDash([6, 8]); ctx.lineDashOffset = -tt * 20;
+      ctx.beginPath(); ctx.arc(x, y, r * 1.4, 0, 6.2832);
+      ctx.strokeStyle = "rgba(242,107,78,.5)"; ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    function draw(now) {
+      var tt = now / 1000;
+      ctx.clearRect(0, 0, W, H);
+      var R = BR * view.s;
+      /* atmósfera */
+      var atm = ctx.createRadialGradient(CX, CY, R * .6, CX, CY, R * 1.25);
+      atm.addColorStop(0, "rgba(20,184,166,0)");
+      atm.addColorStop(.82, "rgba(20,184,166,.07)");
+      atm.addColorStop(1, "rgba(20,184,166,0)");
+      ctx.fillStyle = atm; ctx.fillRect(0, 0, W, H);
+      /* esfera */
+      var sph = ctx.createRadialGradient(CX - R * .25, CY - R * .3, R * .2, CX, CY, R);
+      sph.addColorStop(0, "#123049"); sph.addColorStop(1, "#0A1E2E");
+      ctx.beginPath(); ctx.arc(CX, CY, R, 0, 6.2832); ctx.fillStyle = sph; ctx.fill();
+      /* graticule */
+      ctx.lineWidth = 1; ctx.strokeStyle = "rgba(20,184,166,.15)";
+      for (var gi = 0; gi < GRID.length; gi++) strokePath(GRID[gi]);
+      /* limbo */
+      ctx.beginPath(); ctx.arc(CX, CY, R, 0, 6.2832);
+      ctx.strokeStyle = "rgba(20,184,166,.4)"; ctx.stroke();
+      /* continentes (nube de puntos) */
+      ctx.fillStyle = "rgba(91,155,213,.6)";
+      for (var di = 0; di < dots.length; di++) {
+        project(dots[di][0], dots[di][1], P);
+        if (P.z <= 0) continue;
+        ctx.globalAlpha = .12 + .55 * P.z;
+        ctx.fillRect(P.x - .8, P.y - .8, 1.6, 1.6);
+      }
+      ctx.globalAlpha = 1;
+      /* luces de PHs por ciudad, pulsando por estado */
+      for (var c2 = 0; c2 < CITIES.length; c2++) {
+        var city = CITIES[c2];
+        for (var li = 0; li < city.lights.length; li++) {
+          var L = city.lights[li];
+          project(L.lon, L.lat, P);
+          if (P.z <= 0) continue;
+          var pulse = 1 + .35 * Math.sin(tt * 2.1 + li * 1.7 + c2);
+          var r1 = (1.3 + 1.1 * (view.s - 1)) * pulse;
+          ctx.fillStyle = COL[L.s];
+          ctx.globalAlpha = .16 * P.z;
+          ctx.beginPath(); ctx.arc(P.x, P.y, r1 * 3.2, 0, 6.2832); ctx.fill();
+          ctx.globalAlpha = Math.min(1, .45 + .55 * P.z);
+          ctx.beginPath(); ctx.arc(P.x, P.y, r1, 0, 6.2832); ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+      /* retícula target-lock sobre la ciudad enfocada */
+      if (mode === "hold" || mode === "approach" || mode === "depart") {
+        var fc = CITIES[ci];
+        project(fc.lon, fc.lat, P);
+        if (P.z > 0) {
+          var k = mode === "hold" ? 1 : (mode === "approach" ? ease(Math.min(1, t / T_APPROACH)) : 1 - ease(Math.min(1, t / T_DEPART)));
+          drawReticle(P.x, P.y, 26 + 10 * (1 - k), k, tt);
+        }
+      }
+    }
+
+    /* --- Readout DOM --- */
+    var ro = document.getElementById("globeReadout");
+    function readout(on) {
+      if (on) {
+        var c = CITIES[ci];
+        document.getElementById("grCity").textContent = c.name;
+        document.getElementById("grPhs").textContent = c.phs;
+        document.getElementById("grOk").textContent = c.ok + "%";
+        document.getElementById("grCoord").textContent =
+          Math.abs(c.lat).toFixed(2) + (c.lat >= 0 ? "N" : "S") + " · " +
+          Math.abs(c.lon).toFixed(2) + (c.lon >= 0 ? "E" : "W");
+        ro.classList.add("on");
+      } else ro.classList.remove("on");
+    }
+
+    /* --- Máquina de estados: ROAM → APPROACH → HOLD → DEPART → ROAM --- */
+    function startApproach(idx) {
+      ci = idx; from = { lon: view.lon, lat: view.lat, s: view.s };
+      mode = "approach"; t = 0;
+    }
+    function step(ds) {
+      if (mode === "roam") {
+        view.lon = norm(view.lon + 4.5 * ds);
+        view.lat += (10 - view.lat) * .02;
+        view.s += (1 - view.s) * .06;
+        if (t > T_ROAM && !dragging) startApproach((ci + 1) % CITIES.length);
+      } else if (mode === "approach") {
+        var k = ease(Math.min(1, t / T_APPROACH));
+        view.lon = lerpLon(from.lon, CITIES[ci].lon, k);
+        view.lat = from.lat + (CITIES[ci].lat - from.lat) * k;
+        view.s = from.s + (1.85 - from.s) * k;
+        if (t >= T_APPROACH) { mode = "hold"; t = 0; readout(true); }
+      } else if (mode === "hold") {
+        if (t >= T_HOLD) { mode = "depart"; t = 0; from = { lon: view.lon, lat: view.lat, s: view.s }; readout(false); }
+      } else if (mode === "depart") {
+        var k2 = ease(Math.min(1, t / T_DEPART));
+        view.s = from.s + (1 - from.s) * k2;
+        view.lon = norm(view.lon + 3 * ds);
+        view.lat = from.lat + (10 - from.lat) * k2;
+        if (t >= T_DEPART) { mode = "roam"; t = 0; }
+      } else if (mode === "manual") {
+        if (performance.now() > resumeAt && !dragging) { mode = "roam"; t = 0; }
+      }
+    }
+    function loop(now) {
+      if (!running) return;
+      var dt = Math.min(50, now - last); last = now; t += dt;
+      step(dt / 1000);
+      draw(now);
+      requestAnimationFrame(loop);
+    }
+
+    /* --- Interacción: arrastrar para rotar, clic para enfocar ciudad --- */
+    var dragging = false, px = 0, py = 0, moved = 0;
+    canvas.addEventListener("pointerdown", function (e) {
+      if (reduce) return;
+      dragging = true; moved = 0; px = e.clientX; py = e.clientY;
+      canvas.setPointerCapture(e.pointerId);
+      mode = "manual"; readout(false);
+      if (window.__stopActAuto) window.__stopActAuto(); /* el usuario tomó el control */
+    });
+    canvas.addEventListener("pointermove", function (e) {
+      if (!dragging) {
+        /* cursor pointer al pasar sobre una ciudad */
+        var near = false;
+        for (var i = 0; i < CITIES.length; i++) {
+          project(CITIES[i].lon, CITIES[i].lat, P);
+          if (P.z > 0 && Math.hypot(P.x - e.offsetX, P.y - e.offsetY) < 20) { near = true; break; }
+        }
+        canvas.style.cursor = near ? "pointer" : "grab";
+        return;
+      }
+      var dx = e.clientX - px, dy = e.clientY - py;
+      px = e.clientX; py = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
+      view.lon = norm(view.lon - dx * .35 / view.s);
+      view.lat = Math.max(-72, Math.min(72, view.lat + dy * .35 / view.s));
+    });
+    canvas.addEventListener("pointerup", function (e) {
+      if (!dragging) return;
+      dragging = false; resumeAt = performance.now() + 3800;
+      if (moved < 6) {
+        var best = -1, bd = 24;
+        for (var i = 0; i < CITIES.length; i++) {
+          project(CITIES[i].lon, CITIES[i].lat, P);
+          if (P.z > 0) {
+            var d = Math.hypot(P.x - e.offsetX, P.y - e.offsetY);
+            if (d < bd) { bd = d; best = i; }
+          }
+        }
+        if (best >= 0) { startApproach(best); return; }
+      }
+      mode = "manual";
+    });
+
+    /* --- Activación: solo cuando el acto 2 está visible en pantalla --- */
+    function sync() {
+      var active = inView && !act2.classList.contains("is-hidden") && !reduce && !document.hidden;
+      if (active && !running) { running = true; last = performance.now(); requestAnimationFrame(loop); }
+      else if (!active) running = false;
+    }
+    window.__globeSync = sync;
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (en) { inView = en[0].isIntersecting; sync(); }, { threshold: .05 }).observe(canvas);
+    } else { inView = true; }
+    document.addEventListener("visibilitychange", sync);
+
+    /* --- Init: reduced-motion = frame estático enfocado en Panamá --- */
+    resize();
+    if (reduce) {
+      view = { lon: CITIES[0].lon, lat: CITIES[0].lat, s: 1.5 };
+      ci = 0; mode = "hold"; t = 0;
+      readout(true);
+      draw(performance.now());
+    }
+  })();
+
+  /* --- HUD: corner brackets en paneles clave --- */
+  document.querySelectorAll(".sol-card,.kpi-tile,.dash-mock,.chat,.hero-map,.feature").forEach(function (el) {
+    el.classList.add("has-hud");
+    var tl = document.createElement("i"); tl.className = "hud-corner tl";
+    var br = document.createElement("i"); br.className = "hud-corner br";
+    el.appendChild(tl); el.appendChild(br);
+  });
+
+  /* --- HUD: secuencia de arranque del hero --- */
+  if (!reduce) {
+    requestAnimationFrame(function () {
+      var hero = document.querySelector(".hero");
+      if (hero) hero.classList.add("boot");
+    });
+  }
+
+  /* --- HUD: telemetría viva (el vital "Reportes activos" fluctúa) --- */
+  if (!reduce) {
+    var repVital = document.querySelector('.vital .v-num[data-count="18"]');
+    if (repVital) {
+      setInterval(function () {
+        if (document.hidden) return;
+        repVital.textContent = 18 + (Math.random() < .5 ? -1 : 1) * (Math.random() < .6 ? 1 : 2);
+      }, 4200);
+    }
+  }
+
+  /* ==========================================================================
+     MODO DASHBOARD — consola conmutables
+     Mueve las secciones reales del flujo de scroll a los paneles de la consola
+     (y las restaura al salir). Cero duplicación de contenido.
+     ========================================================================== */
+  (function () {
+    var root = document.getElementById("dmRoot");
+    var tog = document.getElementById("dashToggle");
+    if (!root || !tog) return;
+    var MAP = {
+      inicio: ["#hero"],
+      soluciones: ["#soluciones", "#personalizado"],
+      operacion: ["#como"],
+      empresas: ["#empresas"],
+      desempeno: ["#desempeno"],
+      contacto: ["#confianza", "#contacto"]
+    };
+    var marks = {}, on = false, savedY = 0;
+    function panel(name) { return root.querySelector('.dm-panel[data-panel="' + name + '"]'); }
+
+    function enter() {
+      savedY = window.scrollY;
+      Object.keys(MAP).forEach(function (k) {
+        MAP[k].forEach(function (sel) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          var mk = document.createComment("dm:" + sel);
+          el.parentNode.insertBefore(mk, el);
+          marks[sel] = mk;
+          panel(k).appendChild(el);
+        });
+      });
+      document.body.classList.add("dash-on");
+      tog.textContent = "✕ SALIR DE CONSOLA";
+      tog.setAttribute("aria-pressed", "true");
+      on = true;
+      var x = document.getElementById("dmExit");
+      if (x) x.focus();
+      if (window.__globeSync) window.__globeSync();
+    }
+    function exit() {
+      Object.keys(MAP).forEach(function (k) {
+        MAP[k].forEach(function (sel) {
+          var el = panel(k).querySelector(sel);
+          var mk = marks[sel];
+          if (el && mk && mk.parentNode) {
+            mk.parentNode.insertBefore(el, mk);
+            mk.parentNode.removeChild(mk);
+          }
+        });
+      });
+      document.body.classList.remove("dash-on");
+      tog.textContent = "⌘ MODO DASHBOARD";
+      tog.setAttribute("aria-pressed", "false");
+      on = false;
+      window.scrollTo(0, savedY);
+      if (window.__globeSync) window.__globeSync();
+    }
+    tog.addEventListener("click", function () { on ? exit() : enter(); });
+    var xb = document.getElementById("dmExit");
+    if (xb) xb.addEventListener("click", exit);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && on) exit(); });
+
+    root.querySelectorAll(".dm-tab").forEach(function (tb) {
+      tb.addEventListener("click", function () {
+        root.querySelectorAll(".dm-tab").forEach(function (o) { o.setAttribute("aria-selected", "false"); });
+        root.querySelectorAll(".dm-panel").forEach(function (p) { p.classList.remove("on"); });
+        tb.setAttribute("aria-selected", "true");
+        panel(tb.getAttribute("data-panel")).classList.add("on");
+        if (window.__globeSync) window.__globeSync();
+      });
+    });
+  })();
+
+  /* --- Formulario -> mailto (placeholder handler) --- */
+  var form = document.getElementById("contactForm");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var nombre = form.nombre.value.trim();
+    var email = form.email.value.trim();
+    var ph = form.ph.value.trim();
+    var tipo = form.tipo.value;
+    var mensaje = form.mensaje.value.trim();
+    if (!nombre || !email) { alert("Por favor completa tu nombre y email."); return; }
+    var subject = encodeURIComponent("Solicitud de demo Vortex — " + (ph || nombre));
+    var body = encodeURIComponent(
+      "Nombre: " + nombre + "\nEmail: " + email + "\nPH/Edificio: " + ph +
+      "\nTipo: " + tipo + "\n\nMensaje:\n" + mensaje
+    );
+    // TODO producción: reemplazar mailto por POST a un backend / formspree
+    window.location.href = "mailto:hola@vortexadmin.com?subject=" + subject + "&body=" + body;
+  });
+})();
+</script>

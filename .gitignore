@@ -1,0 +1,8 @@
+# Archivos de sistema
+.DS_Store
+
+# Configuración local de Claude Code
+.claude/
+
+# Brief interno (estrategia de negocio — no publicar en repo público)
+CONTEXTO_Y_PROMPT.md
