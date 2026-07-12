@@ -203,9 +203,12 @@
 
   /* Escenario del hero */
   .hero-stage {
-    position: relative; margin: 2.4rem auto 0; max-width: 940px; aspect-ratio: 16 / 10;
+    position: relative; width: 100%; margin: 2.4rem auto 0; max-width: 940px; aspect-ratio: 16 / 10;
     min-height: 360px;
   }
+  /* En pantallas angostas, aspect-ratio + min-height pueden reñir: con width:100% ya no se
+     desborda, pero bajamos el mínimo para que la proporción no quede excesivamente alta. */
+  @media (max-width: 480px) { .hero-stage { min-height: 300px; } }
   .stage-act { position: absolute; inset: 0; transition: opacity .7s var(--ease), transform .7s var(--ease); }
   .stage-act.is-hidden { opacity: 0; pointer-events: none; transform: scale(.96); }
 
