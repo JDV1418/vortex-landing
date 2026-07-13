@@ -41,10 +41,14 @@
     --coral:    #F26B4E;
     --coral-dim:#c8543b;
 
-    /* Datos / estados */
+    /* Datos / estados — alineados 1:1 con los del Mother Dashboard real,
+       para que el visitante reconozca el mismo lenguaje al pasar de la
+       landing al producto. --coral sigue siendo el acento de MARCA
+       (CTAs, logo, headline); --critical es el semáforo de "alerta". */
     --data:     #5B9BD5;
-    --ok:       #3FB98A;
-    --warn:     #F0A64E;
+    --ok:       #22c55e;
+    --warn:     #f59e0b;
+    --critical: #ef4444;
     --teal:     #14b8a6;
 
     /* Texto */
@@ -233,7 +237,7 @@
   .bubble {
     position: absolute; z-index: 4; display: inline-flex; align-items: center; gap: .5rem;
     padding: .45rem .7rem .45rem .55rem; border-radius: 999px;
-    background: rgba(18,41,59,.92); border: 1px solid var(--coral);
+    background: rgba(18,41,59,.92); border: 1px solid var(--critical);
     font-size: .78rem; font-weight: 600; white-space: nowrap;
     box-shadow: 0 8px 24px -6px rgba(0,0,0,.5); backdrop-filter: blur(4px);
     opacity: 0; transform: translateY(8px) scale(.9);
@@ -243,7 +247,7 @@
   @keyframes bubbleIn { to { opacity:1; transform: translateY(0) scale(1); } }
   .bubble.resolved { border-color: var(--ok); }
   .bubble.fade { opacity: 0 !important; transform: translateY(-10px) scale(.9); transition: opacity .8s, transform .8s; }
-  .bubble .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 4px rgba(242,107,78,.18); }
+  .bubble .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--critical); box-shadow: 0 0 0 4px rgba(239,68,68,.18); }
   .bubble.resolved .dot { background: var(--ok); box-shadow: 0 0 0 4px rgba(63,185,138,.18); }
   .bubble .ai-chip { font-size: .62rem; letter-spacing: .04em; color: var(--teal); background: rgba(20,184,166,.14); border: 1px solid rgba(20,184,166,.35); padding: .08rem .4rem; border-radius: 999px; }
   .bubble:hover { transform: translateY(-3px) scale(1.04); }
@@ -272,7 +276,7 @@
   .vital { display: flex; align-items: center; gap: .8rem; padding: .9rem 1rem; background: rgba(18,41,59,.6); border: 1px solid var(--border); border-radius: var(--radius-sm); }
   .vital .v-ic { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(91,155,213,.12); color: var(--data); }
   .vital .v-ic.ok { background: rgba(63,185,138,.12); color: var(--ok); }
-  .vital .v-ic.coral { background: rgba(242,107,78,.12); color: var(--coral); }
+  .vital .v-ic.critical { background: rgba(239,68,68,.12); color: var(--critical); }
   .vital .v-ic.teal { background: rgba(20,184,166,.12); color: var(--teal); }
   .vital .v-num { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1; }
   .vital .v-lab { font-size: .74rem; color: var(--muted); }
@@ -345,7 +349,7 @@
   .msg.bot { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
   .msg .who { display: block; font-size: .66rem; color: var(--teal); margin-bottom: .2rem; font-weight: 600; }
   .msg.me .who { color: #9fe6cf; }
-  .msg .tag { display: inline-block; margin-top: .4rem; font-size: .68rem; color: var(--coral); background: rgba(242,107,78,.12); border: 1px solid rgba(242,107,78,.3); padding: .1rem .45rem; border-radius: 999px; }
+  .msg .tag { display: inline-block; margin-top: .4rem; font-size: .68rem; color: var(--critical); background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); padding: .1rem .45rem; border-radius: 999px; }
 
   /* Empresas / Mother Dashboard */
   .ent-band { background: linear-gradient(180deg, var(--navy-900), var(--surface-2)); }
@@ -384,7 +388,7 @@
   .kpi-tile .k-value { font-family: var(--font-display); font-weight: 700; font-size: 2.1rem; line-height: 1; margin: .5rem 0 .4rem; }
   .kpi-tile .k-value small { font-size: .95rem; color: var(--muted); font-weight: 600; }
   .k-delta { font-size: .8rem; font-weight: 700; display: inline-flex; gap: .25rem; align-items: center; }
-  .k-delta.good { color: var(--ok); } .k-delta.bad { color: var(--coral); }
+  .k-delta.good { color: var(--ok); } .k-delta.bad { color: var(--critical); }
   .k-delta span { color: var(--muted); font-weight: 500; }
   .k-spark { margin-top: .9rem; height: 34px; width: 100%; }
 
@@ -408,7 +412,7 @@
   .score-badge.exc { color: var(--ok); background: rgba(63,185,138,.14); border: 1px solid rgba(63,185,138,.35); }
   .score-badge.good2 { color: var(--data); background: rgba(91,155,213,.14); border: 1px solid rgba(91,155,213,.35); }
   .score-badge.warn2 { color: var(--warn); background: rgba(240,166,78,.14); border: 1px solid rgba(240,166,78,.35); }
-  .score-badge.low { color: var(--coral); background: rgba(242,107,78,.14); border: 1px solid rgba(242,107,78,.35); }
+  .score-badge.low { color: var(--critical); background: rgba(239,68,68,.14); border: 1px solid rgba(239,68,68,.35); }
   .perf-note { display: flex; gap: .6rem; align-items: flex-start; margin-top: 1.4rem; padding: 1rem 1.2rem; border-radius: var(--radius-sm); background: rgba(20,184,166,.06); border: 1px solid rgba(20,184,166,.25); color: var(--muted); font-size: .88rem; }
   .perf-note svg { flex: 0 0 auto; color: var(--teal); margin-top: 2px; }
 
@@ -824,14 +828,15 @@
           </div>
         </div>
 
-        <!-- ACTO 2: cartera global — GLOBO TERRÁQUEO holográfico (Canvas 2D, sin librerías).
-             Rota, hace zoom a ciudades y enciende las luces de los PHs administrados. -->
+        <!-- ACTO 2: cartera nacional — MAPA DE PANAMÁ holográfico (Canvas 2D, sin librerías).
+             Recorre las provincias con PHs administrados y enciende sus luces, mismo
+             lenguaje visual y colores de estado que el Mother Dashboard real. -->
         <div class="stage-act is-hidden" id="act2">
           <div class="hero-map-wrap">
-            <div class="hero-map hud-globe">
-              <canvas id="globeCanvas" aria-hidden="true"></canvas>
+            <div class="hero-map hud-panama">
+              <canvas id="panamaCanvas" aria-hidden="true"></canvas>
               <!-- Readout HUD de la ciudad enfocada (datos ilustrativos) -->
-              <div class="globe-readout" id="globeReadout" aria-hidden="true">
+              <div class="globe-readout" id="mapReadout" aria-hidden="true">
                 <div class="gr-top">RED VORTEX · DEMO ILUSTRATIVA</div>
                 <div class="gr-city" id="grCity">—</div>
                 <div class="gr-row"><span>PHS ACTIVOS</span><b id="grPhs">—</b></div>
@@ -841,7 +846,7 @@
               <div class="map-legend">
                 <span><i style="background:var(--ok)"></i> Al día</span>
                 <span><i style="background:var(--warn)"></i> Atención</span>
-                <span><i style="background:var(--coral)"></i> Reporte activo</span>
+                <span><i style="background:var(--critical)"></i> Reporte activo</span>
                 <span style="opacity:.65">· arrastra para rotar</span>
               </div>
             </div>
@@ -852,7 +857,7 @@
       <!-- Signos vitales (cifras ILUSTRATIVAS) -->
       <div class="vitals" role="list" aria-label="Signos vitales de la operación (cifras ilustrativas)">
         <div class="vital" role="listitem">
-          <div class="v-ic coral">
+          <div class="v-ic critical">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>
           </div>
           <div><div class="v-num" data-count="18">0</div><div class="v-lab">Reportes activos</div></div>
@@ -904,14 +909,14 @@
               <rect x="0" y="0" width="400" height="30" fill="#12293B"/>
               <circle cx="18" cy="15" r="4" fill="#F26B4E"/><text x="32" y="20" fill="#F2F6F9" font-size="11" font-family="sans-serif">Panel · Torre Vista</text>
               <rect x="14" y="44" width="115" height="55" rx="8" fill="#12293B" stroke="#1E3A4F"/>
-              <text x="26" y="66" fill="#8FA6B5" font-size="9" font-family="sans-serif">Reportes</text><text x="26" y="88" fill="#F26B4E" font-size="20" font-family="sans-serif" font-weight="bold">18</text>
+              <text x="26" y="66" fill="#8FA6B5" font-size="9" font-family="sans-serif">Reportes</text><text x="26" y="88" fill="#ef4444" font-size="20" font-family="sans-serif" font-weight="bold">18</text>
               <rect x="143" y="44" width="115" height="55" rx="8" fill="#12293B" stroke="#1E3A4F"/>
               <text x="155" y="66" fill="#8FA6B5" font-size="9" font-family="sans-serif">Reservas</text><text x="155" y="88" fill="#5B9BD5" font-size="20" font-family="sans-serif" font-weight="bold">7</text>
               <rect x="272" y="44" width="115" height="55" rx="8" fill="#12293B" stroke="#1E3A4F"/>
-              <text x="284" y="66" fill="#8FA6B5" font-size="9" font-family="sans-serif">Al día</text><text x="284" y="88" fill="#3FB98A" font-size="20" font-family="sans-serif" font-weight="bold">94%</text>
+              <text x="284" y="66" fill="#8FA6B5" font-size="9" font-family="sans-serif">Al día</text><text x="284" y="88" fill="#22c55e" font-size="20" font-family="sans-serif" font-weight="bold">94%</text>
               <rect x="14" y="112" width="373" height="84" rx="8" fill="#12293B" stroke="#1E3A4F"/>
               <polyline points="30,175 80,150 130,160 180,130 230,140 280,110 340,120 375,100" fill="none" stroke="#5B9BD5" stroke-width="2"/>
-              <polyline points="30,180 80,170 130,168 180,158 230,150 280,148 340,140 375,138" fill="none" stroke="#3FB98A" stroke-width="2" stroke-dasharray="3 3"/>
+              <polyline points="30,180 80,170 130,168 180,158 230,150 280,148 340,140 375,138" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="3 3"/>
             </svg>
           </div>
           <ul class="sol-feats">
@@ -936,15 +941,15 @@
               <!-- mapa -->
               <rect x="14" y="44" width="230" height="152" rx="8" fill="#0D2438" stroke="#1E3A4F"/>
               <path d="M40 90 Q120 70 200 100" stroke="#1E3A4F" fill="none"/><path d="M40 150 Q120 130 210 160" stroke="#1E3A4F" fill="none"/>
-              <circle cx="70" cy="95" r="6" fill="#3FB98A"/><circle cx="140" cy="120" r="6" fill="#F0A64E"/>
-              <circle cx="190" cy="90" r="6" fill="#F26B4E"/><circle cx="110" cy="165" r="6" fill="#3FB98A"/><circle cx="200" cy="160" r="6" fill="#3FB98A"/>
+              <circle cx="70" cy="95" r="6" fill="#22c55e"/><circle cx="140" cy="120" r="6" fill="#f59e0b"/>
+              <circle cx="190" cy="90" r="6" fill="#ef4444"/><circle cx="110" cy="165" r="6" fill="#22c55e"/><circle cx="200" cy="160" r="6" fill="#22c55e"/>
               <!-- ranking -->
               <rect x="256" y="44" width="130" height="152" rx="8" fill="#12293B" stroke="#1E3A4F"/>
               <text x="268" y="62" fill="#8FA6B5" font-size="9" font-family="sans-serif">Ranking admins</text>
-              <rect x="268" y="72" width="90" height="8" rx="4" fill="#3FB98A"/><rect x="268" y="90" width="72" height="8" rx="4" fill="#5B9BD5"/>
-              <rect x="268" y="108" width="60" height="8" rx="4" fill="#5B9BD5"/><rect x="268" y="126" width="44" height="8" rx="4" fill="#F0A64E"/>
+              <rect x="268" y="72" width="90" height="8" rx="4" fill="#22c55e"/><rect x="268" y="90" width="72" height="8" rx="4" fill="#5B9BD5"/>
+              <rect x="268" y="108" width="60" height="8" rx="4" fill="#5B9BD5"/><rect x="268" y="126" width="44" height="8" rx="4" fill="#f59e0b"/>
               <rect x="268" y="150" width="106" height="30" rx="6" fill="#0D2438" stroke="#1E3A4F"/>
-              <text x="278" y="169" fill="#F26B4E" font-size="9" font-family="sans-serif">⚠ 2 alertas activas</text>
+              <text x="278" y="169" fill="#ef4444" font-size="9" font-family="sans-serif">⚠ 2 alertas activas</text>
             </svg>
           </div>
           <ul class="sol-feats">
@@ -1046,7 +1051,7 @@
           </div>
           <div class="dash-kpis">
             <div class="dash-kpi"><div class="k-n" style="color:var(--data)">6</div><div class="k-l">PHs activos</div></div>
-            <div class="dash-kpi"><div class="k-n" style="color:var(--coral)">3</div><div class="k-l">Alertas</div></div>
+            <div class="dash-kpi"><div class="k-n" style="color:var(--critical)">3</div><div class="k-l">Alertas</div></div>
             <div class="dash-kpi"><div class="k-n" style="color:var(--ok)">92%</div><div class="k-l">Al día</div></div>
           </div>
           <div class="dash-map">
@@ -1096,7 +1101,7 @@
             <div class="k-label">Resolución de reportes</div>
             <div class="k-value">94<small>%</small></div>
             <div class="k-delta good">▲ +6 pts <span>vs. mes anterior</span></div>
-            <svg class="k-spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,28 20,26 40,22 60,20 80,14 100,12 120,7" fill="none" stroke="#3FB98A" stroke-width="2"/></svg>
+            <svg class="k-spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,28 20,26 40,22 60,20 80,14 100,12 120,7" fill="none" stroke="#22c55e" stroke-width="2"/></svg>
           </div>
           <div class="kpi-tile">
             <div class="k-label">Tiempo de respuesta</div>
@@ -1108,7 +1113,7 @@
             <div class="k-label">Residentes al día</div>
             <div class="k-value">96<small>%</small></div>
             <div class="k-delta good">▲ +3 pts <span>morosidad a la baja</span></div>
-            <svg class="k-spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,22 20,20 40,21 60,16 80,15 100,11 120,9" fill="none" stroke="#3FB98A" stroke-width="2"/></svg>
+            <svg class="k-spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,22 20,20 40,21 60,16 80,15 100,11 120,9" fill="none" stroke="#22c55e" stroke-width="2"/></svg>
           </div>
           <div class="kpi-tile">
             <div class="k-label">Satisfacción residentes</div>
@@ -1164,8 +1169,8 @@
             </div>
             <!-- Fila 4 -->
             <div class="score-row" role="row">
-              <span class="admin" role="cell"><span class="rank-no">4</span><span class="avatar-sm" style="background:var(--coral)">JS</span><span><span class="a-name">Jorge Sáez</span><br><span class="a-ph">Central Park</span></span></span>
-              <span role="cell"><span class="cell-metric" style="color:var(--coral)">72%</span><div class="metric-bar"><i style="width:72%;background:var(--coral)"></i></div></span>
+              <span class="admin" role="cell"><span class="rank-no">4</span><span class="avatar-sm" style="background:var(--critical)">JS</span><span><span class="a-name">Jorge Sáez</span><br><span class="a-ph">Central Park</span></span></span>
+              <span role="cell"><span class="cell-metric" style="color:var(--critical)">72%</span><div class="metric-bar"><i style="width:72%;background:var(--critical)"></i></div></span>
               <span class="cell-metric" role="cell">12 min</span>
               <span class="cell-metric" role="cell">80%</span>
               <span class="cell-metric" role="cell">3.9/5</span>
@@ -1468,7 +1473,7 @@
   }
 
   /* --- Pines del mockup Mother Dashboard (sección empresas) --- */
-  var color = { ok: "#3FB98A", warn: "#F0A64E", coral: "#F26B4E" };
+  var color = { ok: "#22c55e", warn: "#f59e0b", coral: "#ef4444" };
   function drawPins(target, data, scale) {
     var g = document.getElementById(target);
     if (!g) return;
@@ -1576,86 +1581,53 @@
   }
 
   /* ==========================================================================
-     GLOBO TERRÁQUEO HOLOGRÁFICO — Canvas 2D 100% vanilla (hero, acto 2)
-     Rota, hace zoom a ciudades con PHs administrados y enciende sus luces.
+     MAPA DE PANAMÁ HOLOGRÁFICO — Canvas 2D 100% vanilla (hero, acto 2)
+     Silueta estilizada del país (autocontenida, sin tiles externos). Recorre
+     las provincias con PHs administrados y enciende sus luces por estado,
+     con los mismos colores exactos del Mother Dashboard real.
      ========================================================================== */
   (function () {
-    var canvas = document.getElementById("globeCanvas");
+    var canvas = document.getElementById("panamaCanvas");
     if (!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext("2d");
-    var D2R = Math.PI / 180;
-    var COL = { ok: "#3FB98A", warn: "#F0A64E", coral: "#F26B4E" };
+    var COL = { ok: "#22c55e", warn: "#f59e0b", critical: "#ef4444" };
 
-    /* --- Continentes aproximados (lon,lat) → nube de puntos holográfica --- */
-    var POLYS = [
-      /* Norteamérica + Centroamérica */
-      [[-168,66],[-158,71],[-140,70],[-125,72],[-110,73],[-95,73],[-85,70],[-80,73],[-70,62],[-60,55],[-55,52],[-65,45],[-70,42],[-75,38],[-80,32],[-81,26],[-84,30],[-90,29],[-96,27],[-97,22],[-105,20],[-97,16],[-92,14],[-85,11],[-80,8],[-83,9],[-88,14],[-95,17],[-106,24],[-112,26],[-117,33],[-124,40],[-124,48],[-131,55],[-140,60],[-152,60],[-160,56],[-166,62]],
-      /* Sudamérica */
-      [[-78,8],[-72,12],[-64,11],[-60,8],[-52,5],[-44,-1],[-35,-6],[-35,-10],[-39,-14],[-40,-21],[-47,-25],[-52,-31],[-57,-36],[-62,-39],[-65,-45],[-68,-52],[-66,-55],[-71,-54],[-73,-46],[-73,-38],[-71,-31],[-70,-22],[-70,-16],[-76,-12],[-79,-6],[-81,-2],[-79,2]],
-      /* África */
-      [[-17,15],[-16,22],[-10,29],[-6,35],[0,37],[10,37],[20,32],[30,31],[34,27],[36,22],[38,18],[43,11],[48,11],[51,10],[46,3],[41,-2],[40,-11],[36,-18],[33,-26],[27,-33],[20,-35],[17,-33],[15,-27],[12,-18],[9,-7],[9,1],[5,5],[-2,5],[-8,5],[-13,9]],
-      /* Europa */
-      [[-9,37],[-9,43],[-4,44],[-1,46],[-4,48],[0,49],[4,51],[8,54],[8,57],[12,56],[13,54],[18,55],[21,57],[24,59],[30,60],[28,63],[31,70],[40,68],[45,66],[50,60],[48,55],[40,50],[35,47],[30,46],[28,42],[24,40],[20,40],[16,41],[13,44],[9,44],[5,43],[3,42],[-2,43]],
-      /* Asia */
-      [[30,70],[45,68],[60,70],[75,73],[90,76],[105,77],[120,74],[135,72],[150,70],[165,69],[178,66],[179,64],[170,62],[162,58],[158,53],[150,50],[142,47],[137,43],[132,38],[127,33],[122,27],[116,22],[110,18],[107,12],[104,7],[103,2],[99,7],[97,13],[92,20],[88,22],[85,19],[81,13],[78,9],[75,15],[72,20],[68,23],[63,25],[58,26],[54,25],[52,28],[48,29],[44,37],[40,41],[34,42],[30,46],[35,47],[40,50],[48,55],[50,60],[45,66],[40,68]],
-      /* Arabia */
-      [[35,29],[39,32],[48,30],[56,26],[59,22],[57,17],[52,14],[45,13],[43,17],[39,21],[35,28]],
-      /* Australia */
-      [[114,-22],[122,-18],[130,-12],[137,-12],[142,-11],[146,-15],[149,-20],[153,-27],[151,-33],[146,-39],[140,-38],[135,-35],[129,-32],[124,-33],[115,-34],[113,-26]],
-      /* Groenlandia */
-      [[-45,60],[-52,63],[-55,67],[-53,71],[-45,78],[-35,80],[-25,78],[-20,70],[-25,65],[-35,62]]
+    /* --- Silueta de Panamá simplificada (lon,lat) — costa Pacífico + Caribe,
+       incluye la península de Azuero. Trazo estilizado, no catastral. --- */
+    var COAST = [
+      [-83.03,8.06],[-82.62,8.18],[-82.28,8.02],[-81.78,7.86],[-81.28,7.72],
+      [-80.92,7.36],[-80.55,7.18],[-80.33,7.36],[-80.13,7.68],[-79.92,8.12],
+      [-79.60,8.62],[-79.52,8.98],[-79.32,8.68],[-78.62,8.18],[-77.92,7.68],
+      [-77.35,7.24],[-77.22,7.62],[-77.18,8.28],[-77.28,8.62],[-77.70,8.92],
+      [-78.32,9.36],[-78.92,9.52],[-79.55,9.42],[-79.90,9.36],[-80.42,9.36],
+      [-80.92,9.30],[-81.42,9.24],[-81.82,9.36],[-82.22,9.46],[-82.62,9.56],
+      [-82.92,9.60],[-83.00,8.90]
     ];
-    /* Islas sueltas (puntos directos) */
-    var EXTRA = [[138,36],[140,40],[133,34],[-3,54],[-6,53],[47,-19],[46,-22],[173,-42],[175,-39],[110,-7],[117,-1],[122,-2],[101,1],[121,15],[123,11],[-79,22],[-76,20],[-66,18],[-61,15],[142,-6],[147,-8],[178,-18]];
+    var CENTER = { lon: -80.05, lat: 8.55 };
 
-    function inPoly(x, y, poly) {
-      var inside = false;
-      for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-        var xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
-        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
-      }
-      return inside;
-    }
-    var dots = [];
-    for (var la = -58; la <= 80; la += 3) {
-      var st = 3 / Math.max(.3, Math.cos(la * D2R)); /* densidad pareja en la esfera */
-      for (var lo = -180; lo < 180; lo += st) {
-        for (var pi = 0; pi < POLYS.length; pi++) {
-          if (inPoly(lo, la, POLYS[pi])) { dots.push([lo, la]); break; }
-        }
-      }
-    }
-    EXTRA.forEach(function (p) { dots.push(p); });
-
-    /* Graticule precalculado (meridianos + paralelos) */
-    var GRID = [];
-    for (var m = -180; m < 180; m += 30) { var g1 = []; for (var a1 = -85; a1 <= 85; a1 += 5) g1.push([m, a1]); GRID.push(g1); }
-    for (var pl = -60; pl <= 60; pl += 30) { var g2 = []; for (var a2 = -180; a2 <= 180; a2 += 5) g2.push([a2, pl]); GRID.push(g2); }
-
-    /* --- Ciudades con PHs administrados (DATOS ILUSTRATIVOS) --- */
+    /* --- Provincias con PHs administrados (DATOS ILUSTRATIVOS) --- */
     var CITIES = [
-      { name: "CIUDAD DE PANAMÁ", lon: -79.52, lat: 8.98,  phs: 12, ok: 96, alert: false },
-      { name: "MIAMI",            lon: -80.19, lat: 25.76, phs: 5,  ok: 94, alert: false },
-      { name: "BOGOTÁ",           lon: -74.07, lat: 4.61,  phs: 7,  ok: 92, alert: true  },
-      { name: "CIUDAD DE MÉXICO", lon: -99.13, lat: 19.43, phs: 6,  ok: 95, alert: true  },
-      { name: "SANTO DOMINGO",    lon: -69.93, lat: 18.49, phs: 3,  ok: 93, alert: false },
-      { name: "MADRID",           lon: -3.70,  lat: 40.42, phs: 4,  ok: 97, alert: false }
+      { name: "CIUDAD DE PANAMÁ", lon: -79.52, lat: 8.98, phs: 14, ok: 96, alert: false },
+      { name: "COLÓN",            lon: -79.90, lat: 9.35, phs: 6,  ok: 91, alert: true  },
+      { name: "DAVID",            lon: -82.43, lat: 8.43, phs: 5,  ok: 94, alert: false },
+      { name: "SANTIAGO",         lon: -80.98, lat: 8.10, phs: 4,  ok: 93, alert: true  },
+      { name: "CHITRÉ",           lon: -80.43, lat: 7.97, phs: 3,  ok: 97, alert: false }
     ];
     CITIES.forEach(function (c, ci2) {
       c.lights = [];
       for (var i = 0; i < c.phs; i++) {
         var ang = i * 2.399963 + ci2;               /* ángulo áureo: dispersión natural */
-        var rad = .35 + ((i * 37) % 100) / 100 * 1.15;
-        var stt = (i === 0 && c.alert) ? "coral" : ((i % 5 === 3) ? "warn" : "ok");
+        var rad = .045 + ((i * 37) % 100) / 100 * .13;
+        var stt = (i === 0 && c.alert) ? "critical" : ((i % 5 === 3) ? "warn" : "ok");
         c.lights.push({ lon: c.lon + Math.cos(ang) * rad, lat: c.lat + Math.sin(ang) * rad * .8, s: stt });
       }
     });
 
-    /* --- Estado de cámara y máquina de estados --- */
-    var view = { lon: -60, lat: 12, s: 1 };
+    /* --- Estado de cámara (pan/zoom plano, sin esfera) y máquina de estados --- */
+    var view = { lon: CENTER.lon, lat: CENTER.lat, s: 1 };
     var mode = "roam", t = 0, ci = 0, from = null, resumeAt = 0;
-    var T_APPROACH = 2400, T_HOLD = 3000, T_DEPART = 1600, T_ROAM = 3200;
-    var W, H, CX, CY, BR, DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var T_APPROACH = 2400, T_HOLD = 3000, T_DEPART = 1600, T_ROAM = 3400;
+    var W, H, CX, CY, PXPD, DPR = Math.min(window.devicePixelRatio || 1, 2); /* PXPD = px por grado a s=1 */
     var running = false, inView = false, last = 0, P = {};
 
     function resize() {
@@ -1663,33 +1635,28 @@
       W = r.width; H = r.height;
       canvas.width = W * DPR; canvas.height = H * DPR;
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      CX = W / 2; CY = H / 2 + H * .02; BR = Math.min(W, H) * .42;
+      CX = W / 2; CY = H / 2;
+      /* Encaja el país completo (con margen) al zoom base s=1 */
+      PXPD = Math.min(W / 6.6, H / 3.1);
       if (!running) draw(performance.now());
     }
     window.addEventListener("resize", resize);
 
-    function norm(l) { while (l > 180) l -= 360; while (l < -180) l += 360; return l; }
-    function lerpLon(a, b, k) { return norm(a + norm(b - a) * k); }
     function ease(x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
 
-    /* Proyección ortográfica con centro (view.lon, view.lat) */
+    /* Proyección plana local (equirectangular), centrada en view.lon/lat */
     function project(lon, lat, out) {
-      var f = lat * D2R, l = (lon - view.lon) * D2R, f0 = view.lat * D2R;
-      var cf = Math.cos(f), sf = Math.sin(f), cl = Math.cos(l), sl = Math.sin(l);
-      out.x = CX + BR * view.s * (cf * sl);
-      out.y = CY - BR * view.s * (Math.cos(f0) * sf - Math.sin(f0) * cf * cl);
-      out.z = Math.sin(f0) * sf + Math.cos(f0) * cf * cl;
+      out.x = CX + (lon - view.lon) * PXPD * view.s;
+      out.y = CY - (lat - view.lat) * PXPD * view.s;
       return out;
     }
-    function strokePath(pts) {
+    function coastPath() {
       ctx.beginPath();
-      var pen = false;
-      for (var i = 0; i < pts.length; i++) {
-        project(pts[i][0], pts[i][1], P);
-        if (P.z > .02) { if (pen) ctx.lineTo(P.x, P.y); else { ctx.moveTo(P.x, P.y); pen = true; } }
-        else pen = false;
+      for (var i = 0; i < COAST.length; i++) {
+        project(COAST[i][0], COAST[i][1], P);
+        if (i === 0) ctx.moveTo(P.x, P.y); else ctx.lineTo(P.x, P.y);
       }
-      ctx.stroke();
+      ctx.closePath();
     }
 
     function drawReticle(x, y, r, k, tt) {
@@ -1714,62 +1681,69 @@
     function draw(now) {
       var tt = now / 1000;
       ctx.clearRect(0, 0, W, H);
-      var R = BR * view.s;
-      /* atmósfera */
-      var atm = ctx.createRadialGradient(CX, CY, R * .6, CX, CY, R * 1.25);
-      atm.addColorStop(0, "rgba(20,184,166,0)");
-      atm.addColorStop(.82, "rgba(20,184,166,.07)");
+      /* glow ambiental centrado en el país */
+      project(CENTER.lon, CENTER.lat, P);
+      var atm = ctx.createRadialGradient(P.x, P.y, 0, P.x, P.y, Math.max(W, H) * .6);
+      atm.addColorStop(0, "rgba(20,184,166,.10)");
       atm.addColorStop(1, "rgba(20,184,166,0)");
       ctx.fillStyle = atm; ctx.fillRect(0, 0, W, H);
-      /* esfera */
-      var sph = ctx.createRadialGradient(CX - R * .25, CY - R * .3, R * .2, CX, CY, R);
-      sph.addColorStop(0, "#123049"); sph.addColorStop(1, "#0A1E2E");
-      ctx.beginPath(); ctx.arc(CX, CY, R, 0, 6.2832); ctx.fillStyle = sph; ctx.fill();
-      /* graticule */
-      ctx.lineWidth = 1; ctx.strokeStyle = "rgba(20,184,166,.15)";
-      for (var gi = 0; gi < GRID.length; gi++) strokePath(GRID[gi]);
-      /* limbo */
-      ctx.beginPath(); ctx.arc(CX, CY, R, 0, 6.2832);
-      ctx.strokeStyle = "rgba(20,184,166,.4)"; ctx.stroke();
-      /* continentes (nube de puntos) */
-      ctx.fillStyle = "rgba(91,155,213,.6)";
-      for (var di = 0; di < dots.length; di++) {
-        project(dots[di][0], dots[di][1], P);
-        if (P.z <= 0) continue;
-        ctx.globalAlpha = .12 + .55 * P.z;
-        ctx.fillRect(P.x - .8, P.y - .8, 1.6, 1.6);
+      /* tierra: relleno degradado + brillo de costa */
+      coastPath();
+      var land = ctx.createLinearGradient(0, 0, 0, H);
+      land.addColorStop(0, "#123049"); land.addColorStop(1, "#0A1E2E");
+      ctx.fillStyle = land; ctx.fill();
+      ctx.save(); ctx.clip();
+      /* cuadrícula fina clipeada a la silueta (efecto "grid de calles") */
+      ctx.lineWidth = 1; ctx.strokeStyle = "rgba(20,184,166,.14)";
+      var stepDeg = .35;
+      for (var lo = -83.2; lo <= -77.0; lo += stepDeg) {
+        project(lo, 6.5, P); var x0 = P.x, y0 = P.y;
+        project(lo, 10.2, P);
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(P.x, P.y); ctx.stroke();
       }
-      ctx.globalAlpha = 1;
-      /* luces de PHs por ciudad, pulsando por estado */
+      for (var la2 = 6.8; la2 <= 10.0; la2 += stepDeg) {
+        project(-83.4, la2, P); var x1 = P.x, y1 = P.y;
+        project(-76.8, la2, P);
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(P.x, P.y); ctx.stroke();
+      }
+      ctx.restore();
+      /* contorno de costa con brillo teal */
+      coastPath();
+      ctx.lineWidth = 1.6; ctx.strokeStyle = "rgba(20,184,166,.55)"; ctx.stroke();
+      /* luces de PHs por provincia, pulsando por estado */
       for (var c2 = 0; c2 < CITIES.length; c2++) {
         var city = CITIES[c2];
         for (var li = 0; li < city.lights.length; li++) {
           var L = city.lights[li];
           project(L.lon, L.lat, P);
-          if (P.z <= 0) continue;
           var pulse = 1 + .35 * Math.sin(tt * 2.1 + li * 1.7 + c2);
-          var r1 = (1.3 + 1.1 * (view.s - 1)) * pulse;
+          var r1 = (1.5 + 1.3 * (view.s - 1)) * pulse;
           ctx.fillStyle = COL[L.s];
-          ctx.globalAlpha = .16 * P.z;
+          ctx.globalAlpha = .22;
           ctx.beginPath(); ctx.arc(P.x, P.y, r1 * 3.2, 0, 6.2832); ctx.fill();
-          ctx.globalAlpha = Math.min(1, .45 + .55 * P.z);
+          ctx.globalAlpha = .92;
           ctx.beginPath(); ctx.arc(P.x, P.y, r1, 0, 6.2832); ctx.fill();
         }
       }
       ctx.globalAlpha = 1;
-      /* retícula target-lock sobre la ciudad enfocada */
+      /* etiqueta discreta bajo cada capital de provincia */
+      ctx.font = "600 9px " + (getComputedStyle(document.body).getPropertyValue('--font-mono') || 'monospace');
+      ctx.fillStyle = "rgba(242,246,249,.55)"; ctx.textAlign = "center";
+      for (var c3 = 0; c3 < CITIES.length; c3++) {
+        project(CITIES[c3].lon, CITIES[c3].lat, P);
+        if (mode === "roam") ctx.fillText(CITIES[c3].name, P.x, P.y + 16);
+      }
+      /* retícula target-lock sobre la provincia enfocada */
       if (mode === "hold" || mode === "approach" || mode === "depart") {
         var fc = CITIES[ci];
         project(fc.lon, fc.lat, P);
-        if (P.z > 0) {
-          var k = mode === "hold" ? 1 : (mode === "approach" ? ease(Math.min(1, t / T_APPROACH)) : 1 - ease(Math.min(1, t / T_DEPART)));
-          drawReticle(P.x, P.y, 26 + 10 * (1 - k), k, tt);
-        }
+        var k = mode === "hold" ? 1 : (mode === "approach" ? ease(Math.min(1, t / T_APPROACH)) : 1 - ease(Math.min(1, t / T_DEPART)));
+        drawReticle(P.x, P.y, 24 + 8 * (1 - k), k, tt);
       }
     }
 
     /* --- Readout DOM --- */
-    var ro = document.getElementById("globeReadout");
+    var ro = document.getElementById("mapReadout");
     function readout(on) {
       if (on) {
         var c = CITIES[ci];
@@ -1777,8 +1751,7 @@
         document.getElementById("grPhs").textContent = c.phs;
         document.getElementById("grOk").textContent = c.ok + "%";
         document.getElementById("grCoord").textContent =
-          Math.abs(c.lat).toFixed(2) + (c.lat >= 0 ? "N" : "S") + " · " +
-          Math.abs(c.lon).toFixed(2) + (c.lon >= 0 ? "E" : "W");
+          Math.abs(c.lat).toFixed(2) + "N · " + Math.abs(c.lon).toFixed(2) + "W";
         ro.classList.add("on");
       } else ro.classList.remove("on");
     }
@@ -1790,23 +1763,23 @@
     }
     function step(ds) {
       if (mode === "roam") {
-        view.lon = norm(view.lon + 4.5 * ds);
-        view.lat += (10 - view.lat) * .02;
-        view.s += (1 - view.s) * .06;
+        view.lon += (CENTER.lon - view.lon) * .02;
+        view.lat += (CENTER.lat - view.lat) * .02;
+        view.s += (1 - view.s) * .05;
         if (t > T_ROAM && !dragging) startApproach((ci + 1) % CITIES.length);
       } else if (mode === "approach") {
         var k = ease(Math.min(1, t / T_APPROACH));
-        view.lon = lerpLon(from.lon, CITIES[ci].lon, k);
+        view.lon = from.lon + (CITIES[ci].lon - from.lon) * k;
         view.lat = from.lat + (CITIES[ci].lat - from.lat) * k;
-        view.s = from.s + (1.85 - from.s) * k;
+        view.s = from.s + (2.6 - from.s) * k;
         if (t >= T_APPROACH) { mode = "hold"; t = 0; readout(true); }
       } else if (mode === "hold") {
         if (t >= T_HOLD) { mode = "depart"; t = 0; from = { lon: view.lon, lat: view.lat, s: view.s }; readout(false); }
       } else if (mode === "depart") {
         var k2 = ease(Math.min(1, t / T_DEPART));
         view.s = from.s + (1 - from.s) * k2;
-        view.lon = norm(view.lon + 3 * ds);
-        view.lat = from.lat + (10 - from.lat) * k2;
+        view.lon = from.lon + (CENTER.lon - from.lon) * k2;
+        view.lat = from.lat + (CENTER.lat - from.lat) * k2;
         if (t >= T_DEPART) { mode = "roam"; t = 0; }
       } else if (mode === "manual") {
         if (performance.now() > resumeAt && !dragging) { mode = "roam"; t = 0; }
@@ -1820,7 +1793,7 @@
       requestAnimationFrame(loop);
     }
 
-    /* --- Interacción: arrastrar para rotar, clic para enfocar ciudad --- */
+    /* --- Interacción: arrastrar para desplazar, clic para enfocar provincia --- */
     var dragging = false, px = 0, py = 0, moved = 0;
     canvas.addEventListener("pointerdown", function (e) {
       if (reduce) return;
@@ -1831,19 +1804,18 @@
     });
     canvas.addEventListener("pointermove", function (e) {
       if (!dragging) {
-        /* cursor pointer al pasar sobre una ciudad */
         var near = false;
         for (var i = 0; i < CITIES.length; i++) {
           project(CITIES[i].lon, CITIES[i].lat, P);
-          if (P.z > 0 && Math.hypot(P.x - e.offsetX, P.y - e.offsetY) < 20) { near = true; break; }
+          if (Math.hypot(P.x - e.offsetX, P.y - e.offsetY) < 20) { near = true; break; }
         }
         canvas.style.cursor = near ? "pointer" : "grab";
         return;
       }
       var dx = e.clientX - px, dy = e.clientY - py;
       px = e.clientX; py = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
-      view.lon = norm(view.lon - dx * .35 / view.s);
-      view.lat = Math.max(-72, Math.min(72, view.lat + dy * .35 / view.s));
+      view.lon -= dx / (PXPD * view.s);
+      view.lat += dy / (PXPD * view.s);
     });
     canvas.addEventListener("pointerup", function (e) {
       if (!dragging) return;
@@ -1852,10 +1824,8 @@
         var best = -1, bd = 24;
         for (var i = 0; i < CITIES.length; i++) {
           project(CITIES[i].lon, CITIES[i].lat, P);
-          if (P.z > 0) {
-            var d = Math.hypot(P.x - e.offsetX, P.y - e.offsetY);
-            if (d < bd) { bd = d; best = i; }
-          }
+          var d = Math.hypot(P.x - e.offsetX, P.y - e.offsetY);
+          if (d < bd) { bd = d; best = i; }
         }
         if (best >= 0) { startApproach(best); return; }
       }
@@ -1874,10 +1844,10 @@
     } else { inView = true; }
     document.addEventListener("visibilitychange", sync);
 
-    /* --- Init: reduced-motion = frame estático enfocado en Panamá --- */
+    /* --- Init: reduced-motion = frame estático enfocado en Ciudad de Panamá --- */
     resize();
     if (reduce) {
-      view = { lon: CITIES[0].lon, lat: CITIES[0].lat, s: 1.5 };
+      view = { lon: CITIES[0].lon, lat: CITIES[0].lat, s: 2.6 };
       ci = 0; mode = "hold"; t = 0;
       readout(true);
       draw(performance.now());

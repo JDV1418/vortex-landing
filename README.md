@@ -15,13 +15,16 @@ Un `index.html` con las secciones del brief (optimizado a ~9.6 pantallas):
    - **Acto 1 (Un PH):** torre residencial como holograma — anillos HUD giratorios con ticks,
      haz de escaneo recorriendo los pisos, halo/constelación que *respira*, burbujas de reporte
      con ciclo de vida (coral "nuevo" → Agente IA → verde "✓ Resuelto"), heartbeat y parallax/tilt.
-   - **Acto 2 (Varios PHs):** **GLOBO TERRÁQUEO holográfico en Canvas 2D** (100% vanilla, sin
-     librerías): rota continuamente, hace zoom cinematográfico a ciudades administradas y
-     enciende las **luces de los PHs** pulsando por estado (verde/ámbar/coral). Target-lock
-     coral sobre la ciudad enfocada + readout HUD con telemetría (ciudad, PHs, % al día,
-     coordenadas). Se puede **arrastrar para rotar** y **clic en una ciudad** para enfocarla.
-     Se pausa fuera de viewport; con `prefers-reduced-motion` muestra un frame estático de
-     Ciudad de Panamá. Ciudades y cifras **ilustrativas** (marcadas "DEMO ILUSTRATIVA").
+   - **Acto 2 (Varios PHs):** **MAPA DE PANAMÁ holográfico en Canvas 2D** (100% vanilla, sin
+     librerías ni tiles externos — a diferencia del Mother Dashboard real, que usa Leaflet +
+     tiles de CartoDB por internet, aquí la silueta del país está dibujada a mano para mantener
+     la landing 100% autocontenida). Recorre 5 provincias con PHs administrados (Ciudad de
+     Panamá, Colón, David, Santiago, Chitré) y enciende sus **luces pulsando por estado — verde
+     `#22c55e` / ámbar `#f59e0b` / rojo `#ef4444`, los mismos hex exactos del Mother Dashboard
+     real**. Target-lock coral sobre la provincia enfocada + readout HUD con telemetría (ciudad,
+     PHs, % al día, coordenadas). Se puede **arrastrar para desplazar** y **clic en una provincia**
+     para enfocarla. Se pausa fuera de viewport; con `prefers-reduced-motion` muestra un frame
+     estático de Ciudad de Panamá. Ciudades y cifras **ilustrativas** (marcadas "DEMO ILUSTRATIVA").
    - **Toggle manual** "Un PH / Varios PHs" + auto-alternancia (se detiene al interactuar).
    - **Signos vitales** con contadores animados y telemetría viva (cifras ilustrativas).
    - Sistema HUD global: corner brackets en paneles, kickers numerados (01-09) en fuente mono,
@@ -133,10 +136,16 @@ Luego abre `http://localhost:8080`.
 
 - Fondo navy `#0A1E2E → #0D2438`, spotlight `#123049`
 - Superficies `#12293B`, bordes `#1E3A4F`
-- Acento coral `#F26B4E` · datos `#5B9BD5` · ok `#3FB98A` · aviso `#F0A64E` · teal `#14b8a6`
+- Acento de **marca** (CTAs, logo, headline): coral `#F26B4E`
+- Colores de **estado** (alineados 1:1 con el Mother Dashboard real, `--ok`/`--warn`/`--critical`):
+  ok `#22c55e` · aviso `#f59e0b` · crítico `#ef4444` · datos `#5B9BD5` · teal `#14b8a6`
 - Texto `#F2F6F9` / apagado `#8FA6B5`
 
-Todas las variables están al inicio del `<style>` en `:root`, fáciles de ajustar.
+Todas las variables están al inicio del `<style>` en `:root`, fáciles de ajustar. `--coral` (marca)
+y `--critical` (alerta/estado) son variables separadas a propósito: los botones y el CTA siguen
+en coral, pero pines de mapa, badges de score, KPIs "malos" y el bubble de reporte "nuevo" usan
+`--critical`, el mismo rojo exacto que ves en el Mother Dashboard real — así el visitante reconoce
+el mismo lenguaje visual al pasar de la landing al producto.
 
 ---
 
