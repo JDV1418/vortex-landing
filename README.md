@@ -15,10 +15,13 @@ Un `index.html` con las secciones del brief (optimizado a ~9.6 pantallas):
    - **Acto 1 (Un PH):** torre residencial como holograma — anillos HUD giratorios con ticks,
      haz de escaneo recorriendo los pisos, halo/constelación que *respira*, burbujas de reporte
      con ciclo de vida (coral "nuevo" → Agente IA → verde "✓ Resuelto"), heartbeat y parallax/tilt.
-   - **Acto 2 (Varios PHs):** **MAPA DE PANAMÁ holográfico en Canvas 2D** (100% vanilla, sin
-     librerías ni tiles externos — a diferencia del Mother Dashboard real, que usa Leaflet +
-     tiles de CartoDB por internet, aquí la silueta del país está dibujada a mano para mantener
-     la landing 100% autocontenida). Recorre 5 provincias con PHs administrados (Ciudad de
+   - **Acto 2 (Varios PHs):** **MAPA DE PANAMÁ holográfico en Canvas 2D** con **geometría
+     geográfica REAL** (geoBoundaries / CIA World Factbook, dominio público): costa fiel con
+     el Golfo de Panamá, la península de Azuero, Bocas del Toro e islas mayores (Coiba, Isla
+     del Rey), más bordes provinciales sutiles. La geometría (~1,100 puntos, simplificada con
+     Douglas-Peucker a ~660 m) va **incrustada en el archivo** — a diferencia del Mother
+     Dashboard real (Leaflet + tiles de CartoDB por internet), aquí no hay tiles externos y la
+     landing sigue 100% autocontenida. Recorre 5 provincias con PHs administrados (Ciudad de
      Panamá, Colón, David, Santiago, Chitré) y enciende sus **luces pulsando por estado — verde
      `#22c55e` / ámbar `#f59e0b` / rojo `#ef4444`, los mismos hex exactos del Mother Dashboard
      real**. Target-lock coral sobre la provincia enfocada + readout HUD con telemetría (ciudad,
