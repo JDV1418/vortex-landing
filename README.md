@@ -68,7 +68,7 @@ Ya están puestos en `index.html`:
 | Dato | Valor actual | Dónde |
 |---|---|---|
 | WhatsApp | `https://wa.me/50761640089` (+507 6164 0089) | hero, CTA final, contacto, footer |
-| Email | `hola@vortexadmin.com` | `mailto:` del formulario, contacto y footer |
+| Email | `jdv@vortexadmin.com` | `mailto:` del formulario, contacto y footer |
 | Dashboard en vivo | `https://jdv1418.github.io/vortex-mother-dashboard/` | navbar, hero, sección empresas |
 | Dominio | `vortexadmin.com` (archivo `CNAME`) | GitHub Pages lo toma automáticamente |
 
@@ -119,7 +119,7 @@ El archivo **`CNAME`** ya contiene `vortexadmin.com`, así que GitHub Pages lo d
 Propaga de minutos a ~24 h. Alternativas equivalentes: Cloudflare Pages o Netlify.
 
 ### Correo @vortexadmin.com
-Para recibir en `hola@vortexadmin.com`: Google Workspace (~$6/mes), Zoho Mail (plan gratis)
+Para recibir en `jdv@vortexadmin.com`: Google Workspace (~$6/mes), Zoho Mail (plan gratis)
 o Cloudflare Email Routing (gratis, reenvía a tu Gmail). Requiere agregar registros MX en el DNS.
 
 ### Prueba local
