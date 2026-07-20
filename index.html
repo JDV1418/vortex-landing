@@ -1260,7 +1260,8 @@
         </div>
 
         <!-- Formulario: envía por mailto (placeholder). Sustituir action/handler cuando exista backend. -->
-        <form class="contact reveal" id="contactForm" novalidate>
+        <form class="contact reveal" id="contactForm" action="https://formspree.io/f/maqrjeww" method="POST" novalidate>
+          <input type="hidden" name="_subject" value="Nueva solicitud de demo — Vortex Landing" />
           <div class="field">
             <label for="f-nombre">Nombre</label>
             <input id="f-nombre" name="nombre" type="text" autocomplete="name" required />
@@ -1287,8 +1288,8 @@
             <label for="f-msg">Mensaje</label>
             <textarea id="f-msg" name="mensaje" placeholder="Cuéntanos qué te gustaría lograr con Vortex…"></textarea>
           </div>
-          <button class="btn btn-primary" type="submit" style="justify-self:start">Enviar solicitud</button>
-          <p class="illus-note" style="text-align:left; margin-top:0">Al enviar se abrirá tu correo hacia jdv@vortexadmin.com. (Sustituir por un handler real en producción.)</p>
+          <button class="btn btn-primary" type="submit" style="justify-self:start" id="formSubmitBtn">Enviar solicitud</button>
+          <p class="illus-note" style="text-align:left; margin-top:0" id="formStatus" role="status" aria-live="polite">Tu solicitud llega directo a jdv@vortexadmin.com.</p>
         </form>
       </div>
     </div>
@@ -1978,23 +1979,47 @@
     });
   })();
 
-  /* --- Formulario -> mailto (placeholder handler) --- */
+  /* --- Formulario -> Formspree (envío real vía AJAX) --- */
   var form = document.getElementById("contactForm");
+  var submitBtn = document.getElementById("formSubmitBtn");
+  var statusEl = document.getElementById("formStatus");
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var nombre = form.nombre.value.trim();
     var email = form.email.value.trim();
-    var ph = form.ph.value.trim();
-    var tipo = form.tipo.value;
-    var mensaje = form.mensaje.value.trim();
-    if (!nombre || !email) { alert("Por favor completa tu nombre y email."); return; }
-    var subject = encodeURIComponent("Solicitud de demo Vortex — " + (ph || nombre));
-    var body = encodeURIComponent(
-      "Nombre: " + nombre + "\nEmail: " + email + "\nPH/Edificio: " + ph +
-      "\nTipo: " + tipo + "\n\nMensaje:\n" + mensaje
-    );
-    // TODO producción: reemplazar mailto por POST a un backend / formspree
-    window.location.href = "mailto:jdv@vortexadmin.com?subject=" + subject + "&body=" + body;
+    if (!nombre || !email) {
+      statusEl.textContent = "Por favor completa tu nombre y email.";
+      return;
+    }
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Enviando…";
+    statusEl.textContent = "";
+    fetch(form.action, {
+      method: "POST",
+      body: new FormData(form),
+      headers: { "Accept": "application/json" }
+    }).then(function (res) {
+      if (res.ok) {
+        form.reset();
+        submitBtn.textContent = "✓ Solicitud enviada";
+        statusEl.textContent = "¡Gracias! Te contactaremos pronto a " + email + ".";
+      } else {
+        res.json().then(function (data) {
+          var msg = (data && data.errors && data.errors.length) ? data.errors.map(function (er) { return er.message; }).join(" ") : "";
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Enviar solicitud";
+          statusEl.textContent = "No se pudo enviar" + (msg ? ": " + msg : ". Intenta de nuevo o escríbenos por WhatsApp.");
+        }).catch(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Enviar solicitud";
+          statusEl.textContent = "No se pudo enviar. Intenta de nuevo o escríbenos por WhatsApp.";
+        });
+      }
+    }).catch(function () {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Enviar solicitud";
+      statusEl.textContent = "Sin conexión. Intenta de nuevo o escríbenos por WhatsApp.";
+    });
   });
 })();
 </script>

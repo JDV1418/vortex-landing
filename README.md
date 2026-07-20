@@ -42,7 +42,7 @@ Un `index.html` con las secciones del brief (optimizado a ~9.6 pantallas):
    no por opiniones"). Diferenciador central del producto.
 8. **Confianza y legal** (`#confianza`, banda compacta) — aislamiento, proveedor de tecnología, Ley PH Panamá.
 9. **CTA final** — incluye "estés donde estés" y el roadmap comprimido en chips (Hoy · En camino · Visión).
-10. **Formulario** (`#contacto`) — nombre, email, PH, ¿individual o empresa?, mensaje (envía por `mailto`).
+10. **Formulario** (`#contacto`) — nombre, email, PH, ¿individual o empresa?, mensaje (envía vía Formspree, AJAX real).
 11. **Footer** con disclaimer legal.
 
 ### ⌘ Modo Dashboard (consola)
@@ -68,7 +68,7 @@ Ya están puestos en `index.html`:
 | Dato | Valor actual | Dónde |
 |---|---|---|
 | WhatsApp | `https://wa.me/50761640089` (+507 6164 0089) | hero, CTA final, contacto, footer |
-| Email | `jdv@vortexadmin.com` | `mailto:` del formulario, contacto y footer |
+| Email | `jdv@vortexadmin.com` | contacto, footer y destino de los envíos del formulario |
 | Dashboard en vivo | `https://jdv1418.github.io/vortex-mother-dashboard/` | navbar, hero, sección empresas |
 | Dominio | `vortexadmin.com` (archivo `CNAME`) | GitHub Pages lo toma automáticamente |
 
@@ -79,9 +79,10 @@ Pendiente de reemplazar cuando existan datos reales:
 | `[CIFRA_ILUSTRATIVA]` | notas bajo las métricas | métricas reales |
 
 ### Formulario
-Hoy el formulario abre el correo del visitante vía `mailto:[EMAIL_CONTACTO]`. Para producción,
-reemplaza esa línea (marcada con `// TODO producción`) por un POST a tu backend o a un servicio
-tipo Formspree.
+El formulario envía por AJAX (`fetch`) a Formspree: `https://formspree.io/f/maqrjeww`, configurado
+para entregar en `jdv@vortexadmin.com`. No navega fuera de la página; muestra el estado (enviando /
+éxito / error) en el propio botón y en el texto bajo el formulario. Plan gratuito de Formspree:
+hasta 50 envíos/mes — si se supera, gestionar el upgrade desde el dashboard de Formspree.
 
 ---
 
